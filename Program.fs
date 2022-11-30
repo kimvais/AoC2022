@@ -1,4 +1,6 @@
-﻿open AoC2022.Utils
+﻿module AoC2022.Main
+
+open AoC2022.Utils
 open AoC2022.Day1
 
 [<EntryPoint>]
