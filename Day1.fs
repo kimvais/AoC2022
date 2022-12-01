@@ -1,5 +1,21 @@
 ﻿module AoC2022.Day1
 
-let day1 fn () = 0L
+open AoC2022.Utils
 
-let day1part2 fn () = 0L
+let countCalories input =
+    let elves =
+
+        input
+        |> splitByTwoLinefeeds
+        |> Seq.map (fun e -> e |> splitByLinefeed |> Seq.map int64)
+
+    elves |> Seq.map (fun f -> f |> Seq.sum)
+
+
+let day1 fn () =
+    let input = readInput fn |> String.concat "\n"
+    countCalories input |> Seq.max
+
+let day1part2 fn () =
+    let input = readInput fn |> String.concat "\n"
+    countCalories input |> Seq.sortDescending |> Seq.take 3 |> Seq.sum

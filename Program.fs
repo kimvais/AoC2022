@@ -9,6 +9,7 @@ let main argv =
     match day with
     | "1" -> day1 "1" ()
     | "1b" -> day1part2 "1" ()
+    | "test" -> day1 "test" ()
     |> printfn "%d"
     
     0

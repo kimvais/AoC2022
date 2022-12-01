@@ -10,7 +10,8 @@
         <Compile Include="Day1.fs" />
         <Compile Include="Tests.fs" />
         <Compile Include="Program.fs" />
-        <Folder Include="input" />
+        <Content Include="input\test1.txt" />
+        <Content Include="input\1.txt" />
     </ItemGroup>
 
     <ItemGroup>
