@@ -20,10 +20,10 @@ let ``day1, part2`` () =
 
 [<Fact>]
 let ``day2, part 1`` () =
-    day2 "test2" () |> should equal 0L
-    day2 "2" () |> should equal 0L
+    day2 "test2" () |> should equal 15L
+    day2 "2" () |> should equal 13526L
 
 [<Fact>]
 let ``day2, part 2`` () =
-    day2part2 "test2" () |> should equal 0L
-    day2part2 "2" () |> should equal 0L
+    day2part2 "test2" () |> should equal 12L
+    day2part2 "2" () |> should equal 14204L

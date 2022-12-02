@@ -13,6 +13,8 @@
         <Compile Include="Program.fs" />
         <Content Include="input\test1.txt" />
         <Content Include="input\1.txt" />
+        <Content Include="input\test2.txt" />
+        <Content Include="input\2.txt" />
     </ItemGroup>
 
     <ItemGroup>
