@@ -30,7 +30,7 @@ let splitS (sep: string) (s: string) = Regex.Split(s, sep)
 
 let splitByLinefeed (s: string) = s.Split '\n'
 
-let splitByTwoLinefeeds s = Regex.Split(s, "\n\n")
+let splitByTwoLinefeeds = splitS "\n\n"
 
 let readInputDelimByEmptyLine inputfile = readInput inputfile |> String.concat "\n" |> splitByTwoLinefeeds
 
