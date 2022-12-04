@@ -23,19 +23,10 @@ let parse (lines: string seq) =
 
 let oneContainsAnother (ass1, ass2) = Set.isSubset ass1 ass2 || Set.isSubset ass2 ass1
 
-let overlaps (ass1, ass2) =
-    Set.intersect ass1 ass2 |> Set.isEmpty |> not
+let overlaps (ass1, ass2) = Set.intersect ass1 ass2 |> Set.isEmpty |> not
 
+let solveDay4 matcher fn () =
+    readInput fn |> parse |> Seq.filter matcher |> Seq.length |> int64
 
-let day4 fn () =
-    let input = readInput fn
-    let assignments = parse input
-
-    assignments
-    |> Seq.filter oneContainsAnother
-    |> Seq.length
-    |> int64
-
-let day4part2 fn () =
-    let assignments = readInput fn |> parse
-    assignments |> Seq.filter overlaps |> Seq.length |> int64
+let day4 = solveDay4 oneContainsAnother
+let day4part2 = solveDay4 overlaps
