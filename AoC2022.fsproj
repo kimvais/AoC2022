@@ -22,6 +22,8 @@
         <Content Include="input\3.txt" />
         <Content Include="input\test4.txt" />
         <Content Include="input\4.txt" />
+        <Content Include="input\5.txt" />
+        <Content Include="input\test5.txt" />
     </ItemGroup>
 
     <ItemGroup>
