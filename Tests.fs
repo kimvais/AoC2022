@@ -53,10 +53,10 @@ let ``day4, part 2`` () =
 
 [<Fact>]
 let ``day5, part 1`` () =
-    day5 "test5" () |> should equal -1L
-    day5 "5" () |> should equal -1L
+    solveDay5 move "test5" () |> should equal "CMZ"
+    solveDay5 move "5" () |> should equal "RNZLFZSJH"
 
 [<Fact>]
 let ``day5, part2`` () =
-    day5part2 "test5" () |> should equal -1L
-    day5part2 "5" () |> should equal -1L
+    solveDay5 move9001 "test5" () |> should equal "MCD"
+    solveDay5 move9001 "5" () |> should equal "CNSFCGJSM"

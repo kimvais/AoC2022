@@ -21,15 +21,24 @@ let rec move source destination count (positions: char list array) =
         positions.[destination] <- dst'
         move source destination (n - 1) positions
 
-let rec moveCrates instructions positions =
+let rec move9001 source destination count (positions: char list array) =
+    let src = positions.[source]
+    let dst = positions.[destination]
+    let src' = src |> List.skip count
+    let dst' = (src |> List.take count) @ dst
+    positions.[source] <- src'
+    positions.[destination] <- dst'
+    positions
+
+let rec moveCrates moveFunc instructions positions =
     match instructions with
     | i when Seq.isEmpty i -> positions
     | i ->
         let count, source, destination = Seq.head i
-        let positions' = move source destination count positions
-        moveCrates (Seq.tail instructions) positions'
+        let positions' = moveFunc source destination count positions
+        moveCrates moveFunc (Seq.tail instructions) positions'
 
-let day5 fn () =
+let getInput fn =
     let input = readInput fn |> String.concat "\n" |> splitByTwoLinefeeds
     let crates = Seq.head input |> splitByLinefeed
 
@@ -50,14 +59,22 @@ let day5 fn () =
         )
         |> Array.ofSeq
 
-    let finalPositions = moveCrates instructions positions
+    positions, instructions
 
-    finalPositions
+let getOutput positions =
+    positions
     |> Array.map List.head
     |> Array.map string
     |> Array.reduce (+)
-    |> printfn "%s"
 
+let solveDay5 func fn () =
+    let positions, instructions = getInput fn
+    moveCrates func instructions positions |> getOutput
+
+let day5 fn () =
+    solveDay5 move fn () |> printfn "%s"
     0L
 
-let day5part2 fn () = 0L
+let day5part2 fn () =
+    solveDay5 move9001 fn () |> printfn "%s"
+    0L
