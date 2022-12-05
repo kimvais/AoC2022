@@ -10,6 +10,7 @@ open AoC2022.Day2
 open AoC2022.Day3
 open AoC2022.Day4
 open AoC2022.Day5
+open AoC2022.Day6
 
 [<Fact>]
 let ``day 1, part 1`` () =
@@ -60,3 +61,13 @@ let ``day5, part 1`` () =
 let ``day5, part2`` () =
     solveDay5 move9001 "test5" () |> should equal "MCD"
     solveDay5 move9001 "5" () |> should equal "CNSFCGJSM"
+    
+[<Fact>]
+let ``day6, part 1`` () =
+    day6 "test" |> should equal -1L
+    day6 "6" |> should equal -1L
+    
+[<Fact>]
+let ``day6, part 2`` () =
+    day6part2 "test" |> should equal -1L
+    day6part2 "6" |> should equal -1L
