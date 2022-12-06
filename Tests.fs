@@ -64,10 +64,18 @@ let ``day5, part2`` () =
     
 [<Fact>]
 let ``day6, part 1`` () =
-    day6 "test" |> should equal -1L
-    day6 "6" |> should equal -1L
+    findMarker 4 "mjqjpqmgbljsphdztnvjfqwrcgsmlb" |> should equal 7L
+    findMarker 4 "bvwbjplbgvbhsrlpgdmjqwftvncz" |> should equal 5L
+    findMarker 4 "nppdvjthqldpwncqszvftbrmjlhg" |> should equal 6L
+    findMarker 4 "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg" |> should equal 10L
+    findMarker 4 "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw" |> should equal 11L
+    day6 "6" () |> should equal 1531L
     
 [<Fact>]
 let ``day6, part 2`` () =
-    day6part2 "test" |> should equal -1L
-    day6part2 "6" |> should equal -1L
+    findMarker 14 "mjqjpqmgbljsphdztnvjfqwrcgsmlb" |> should equal 19L
+    findMarker 14 "bvwbjplbgvbhsrlpgdmjqwftvncz" |> should equal 23L
+    findMarker 14 "nppdvjthqldpwncqszvftbrmjlhg" |> should equal 23L
+    findMarker 14 "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg" |> should equal 29L
+    findMarker 14 "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw" |> should equal 26L
+    day6part2 "6" () |> should equal 2518L
