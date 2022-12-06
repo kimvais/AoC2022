@@ -21,5 +21,5 @@ let solveDay4 matcher fn () =
     |> Seq.length
     |> int64
 
-let day4 = solveDay4 oneContainsAnother
-let day4part2 = solveDay4 overlaps
+let part1 = solveDay4 oneContainsAnother
+let part2 = solveDay4 overlaps

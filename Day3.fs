@@ -9,7 +9,7 @@ let parseLine line =
         | c when c >= 'A' && c <= 'Z' -> int64 c - int64 'A' + 27L
         | c -> failwith "Invalid character %A" char c)
 
-let day3 fn () =
+let part1 fn () =
     let input = readInput fn
 
     let getCommon rucksacks =
@@ -22,7 +22,7 @@ let day3 fn () =
     |> Seq.map (parseLine >> Seq.splitInto 2 >> getCommon)
     |> Seq.sum
 
-let day3part2 fn () =
+let part2 fn () =
     let input = readInput fn
 
     input

@@ -12,10 +12,10 @@ let countCalories input =
     elves |> Seq.map (fun f -> f |> Seq.sum)
 
 
-let day1 fn () =
+let part1 fn () =
     let input = readInput fn |> String.concat "\n"
     countCalories input |> Seq.max
 
-let day1part2 fn () =
+let part2 fn () =
     let input = readInput fn |> String.concat "\n"
     countCalories input |> Seq.sortDescending |> Seq.take 3 |> Seq.sum

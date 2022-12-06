@@ -14,6 +14,6 @@ let solveDay6 sampleSize fn =
     let input = readInput fn
     input |> Seq.head |> findMarker sampleSize
 
-let day6 fn () = solveDay6 4 fn
+let part1 fn () = solveDay6 4 fn
 
-let day6part2 fn () = solveDay6 14 fn
+let part2 fn () = solveDay6 14 fn

@@ -4,78 +4,93 @@
 open FsUnit.Xunit
 open Xunit
 
-open AoC2022.Utils
-open AoC2022.Day1
-open AoC2022.Day2
-open AoC2022.Day3
-open AoC2022.Day4
-open AoC2022.Day5
-open AoC2022.Day6
+open AoC2022
 
 [<Fact>]
 let ``day 1, part 1`` () =
-    day1 "test1" () |> should equal 24000L
-    day1 "1" () |> should equal 68775L
+    Day1.part1 "test1" () |> should equal 24000L
+    Day1.part1 "1" () |> should equal 68775L
 
 [<Fact>]
 let ``day1, part2`` () =
-    day1part2 "test1" () |> should equal 45000L
-    day1part2 "1" () |> should equal 202585L
+    Day1.part2 "test1" () |> should equal 45000L
+    Day1.part2 "1" () |> should equal 202585L
 
 [<Fact>]
 let ``day2, part 1`` () =
-    day2 "test2" () |> should equal 15L
-    day2 "2" () |> should equal 13526L
+   Day2.part1 "test2" () |> should equal 15L
+   Day2.part1 "2" () |> should equal 13526L
 
 [<Fact>]
 let ``day2, part 2`` () =
-    day2part2 "test2" () |> should equal 12L
-    day2part2 "2" () |> should equal 14204L
+   Day2.part2 "test2" () |> should equal 12L
+   Day2.part2 "2" () |> should equal 14204L
 
 [<Fact>]
 let ``day3, part 1`` () =
-    day3 "test3" () |> should equal 157L
-    day3 "3" () |> should equal 7674L
+   Day3.part1 "test3" () |> should equal 157L
+   Day3.part1 "3" () |> should equal 7674L
 
 [<Fact>]
 let ``day3, part 2`` =
-    day3part2 "test3" () |> should equal 70L
-    day3part2 "3" () |> should equal 2805L
+   Day3.part2 "test3" () |> should equal 70L
+   Day3.part2 "3" () |> should equal 2805L
 
 [<Fact>]
 let ``day4, part 1`` () =
-    day4 "test4" () |> should equal 2L 
-    day4 "4" () |> should equal 536L 
+   Day4.part1 "test4" () |> should equal 2L
+   Day4.part1 "4" () |> should equal 536L
 
 [<Fact>]
 let ``day4, part 2`` () =
-    day4part2 "test4" () |> should equal 4L
-    day4part2 "4" () |> should equal 845L
+   Day4.part2 "test4" () |> should equal 4L
+   Day4.part2 "4" () |> should equal 845L
 
 [<Fact>]
 let ``day5, part 1`` () =
-    solveDay5 move "test5" () |> should equal "CMZ"
-    solveDay5 move "5" () |> should equal "RNZLFZSJH"
+    Day5.solve Day5.move "test5" () |> should equal "CMZ"
+    Day5.solve Day5.move "5" () |> should equal "RNZLFZSJH"
 
 [<Fact>]
 let ``day5, part2`` () =
-    solveDay5 move9001 "test5" () |> should equal "MCD"
-    solveDay5 move9001 "5" () |> should equal "CNSFCGJSM"
-    
+    Day5.solve Day5.move9001 "test5" () |> should equal "MCD"
+    Day5.solve Day5.move9001 "5" () |> should equal "CNSFCGJSM"
+
 [<Fact>]
 let ``day6, part 1`` () =
-    findMarker 4 "mjqjpqmgbljsphdztnvjfqwrcgsmlb" |> should equal 7L
-    findMarker 4 "bvwbjplbgvbhsrlpgdmjqwftvncz" |> should equal 5L
-    findMarker 4 "nppdvjthqldpwncqszvftbrmjlhg" |> should equal 6L
-    findMarker 4 "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg" |> should equal 10L
-    findMarker 4 "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw" |> should equal 11L
-    day6 "6" () |> should equal 1531L
-    
+    Day6.findMarker 4 "mjqjpqmgbljsphdztnvjfqwrcgsmlb" |> should equal 7L
+    Day6.findMarker 4 "bvwbjplbgvbhsrlpgdmjqwftvncz" |> should equal 5L
+    Day6.findMarker 4 "nppdvjthqldpwncqszvftbrmjlhg" |> should equal 6L
+    Day6.findMarker 4 "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg"
+    |> should equal 10L
+
+    Day6.findMarker 4 "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw"
+    |> should equal 11L
+
+    Day6.part1 "6" () |> should equal 1531L
+
 [<Fact>]
 let ``day6, part 2`` () =
-    findMarker 14 "mjqjpqmgbljsphdztnvjfqwrcgsmlb" |> should equal 19L
-    findMarker 14 "bvwbjplbgvbhsrlpgdmjqwftvncz" |> should equal 23L
-    findMarker 14 "nppdvjthqldpwncqszvftbrmjlhg" |> should equal 23L
-    findMarker 14 "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg" |> should equal 29L
-    findMarker 14 "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw" |> should equal 26L
-    day6part2 "6" () |> should equal 2518L
+    Day6.findMarker 14 "mjqjpqmgbljsphdztnvjfqwrcgsmlb"
+    |> should equal 19L
+
+    Day6.findMarker 14 "bvwbjplbgvbhsrlpgdmjqwftvncz" |> should equal 23L
+    Day6.findMarker 14 "nppdvjthqldpwncqszvftbrmjlhg" |> should equal 23L
+
+    Day6.findMarker 14 "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg"
+    |> should equal 29L
+
+    Day6.findMarker 14 "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw"
+    |> should equal 26L
+
+    Day6.part2 "6" () |> should equal 2518L
+
+[<Fact>]
+let ``day 7, part 1`` () =
+   Day7.part1 "test7" () |> should equal -1L
+   Day7.part1 "7" () |> should equal -1L
+
+[<Fact>]
+let ``day 7, part 2`` () =
+   Day7.part2 "test7" () |> should equal -1L
+   Day7.part2 "7" () |> should equal -1L

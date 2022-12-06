@@ -67,14 +67,14 @@ let getOutput positions =
     |> Array.map string
     |> Array.reduce (+)
 
-let solveDay5 func fn () =
+let solve func fn () =
     let positions, instructions = getInput fn
     moveCrates func instructions positions |> getOutput
 
-let day5 fn () =
-    solveDay5 move fn () |> printfn "%s"
+let part1 fn () =
+    solve move fn () |> printfn "%s"
     0L
 
-let day5part2 fn () =
-    solveDay5 move9001 fn () |> printfn "%s"
+let part2 fn () =
+    solve move9001 fn () |> printfn "%s"
     0L

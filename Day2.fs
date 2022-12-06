@@ -2,7 +2,7 @@
 
 open AoC2022.Utils
 
-let day2 fn () =
+let part1 fn () =
     let rounds = readInput fn
 
     let score =
@@ -19,7 +19,7 @@ let day2 fn () =
 
     rounds |> Seq.sumBy score |> int64
 
-let day2part2 fn () =
+let part2 fn () =
     let rounds = readInput fn
 
     let score =
