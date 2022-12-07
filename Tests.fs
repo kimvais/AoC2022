@@ -18,33 +18,33 @@ let ``day1, part2`` () =
 
 [<Fact>]
 let ``day2, part 1`` () =
-   Day2.part1 "test2" () |> should equal 15L
-   Day2.part1 "2" () |> should equal 13526L
+    Day2.part1 "test2" () |> should equal 15L
+    Day2.part1 "2" () |> should equal 13526L
 
 [<Fact>]
 let ``day2, part 2`` () =
-   Day2.part2 "test2" () |> should equal 12L
-   Day2.part2 "2" () |> should equal 14204L
+    Day2.part2 "test2" () |> should equal 12L
+    Day2.part2 "2" () |> should equal 14204L
 
 [<Fact>]
 let ``day3, part 1`` () =
-   Day3.part1 "test3" () |> should equal 157L
-   Day3.part1 "3" () |> should equal 7674L
+    Day3.part1 "test3" () |> should equal 157L
+    Day3.part1 "3" () |> should equal 7674L
 
 [<Fact>]
 let ``day3, part 2`` =
-   Day3.part2 "test3" () |> should equal 70L
-   Day3.part2 "3" () |> should equal 2805L
+    Day3.part2 "test3" () |> should equal 70L
+    Day3.part2 "3" () |> should equal 2805L
 
 [<Fact>]
 let ``day4, part 1`` () =
-   Day4.part1 "test4" () |> should equal 2L
-   Day4.part1 "4" () |> should equal 536L
+    Day4.part1 "test4" () |> should equal 2L
+    Day4.part1 "4" () |> should equal 536L
 
 [<Fact>]
 let ``day4, part 2`` () =
-   Day4.part2 "test4" () |> should equal 4L
-   Day4.part2 "4" () |> should equal 845L
+    Day4.part2 "test4" () |> should equal 4L
+    Day4.part2 "4" () |> should equal 845L
 
 [<Fact>]
 let ``day5, part 1`` () =
@@ -58,9 +58,15 @@ let ``day5, part2`` () =
 
 [<Fact>]
 let ``day6, part 1`` () =
-    Day6.findMarker 4 "mjqjpqmgbljsphdztnvjfqwrcgsmlb" |> should equal 7L
-    Day6.findMarker 4 "bvwbjplbgvbhsrlpgdmjqwftvncz" |> should equal 5L
-    Day6.findMarker 4 "nppdvjthqldpwncqszvftbrmjlhg" |> should equal 6L
+    Day6.findMarker 4 "mjqjpqmgbljsphdztnvjfqwrcgsmlb"
+    |> should equal 7L
+
+    Day6.findMarker 4 "bvwbjplbgvbhsrlpgdmjqwftvncz"
+    |> should equal 5L
+
+    Day6.findMarker 4 "nppdvjthqldpwncqszvftbrmjlhg"
+    |> should equal 6L
+
     Day6.findMarker 4 "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg"
     |> should equal 10L
 
@@ -74,8 +80,11 @@ let ``day6, part 2`` () =
     Day6.findMarker 14 "mjqjpqmgbljsphdztnvjfqwrcgsmlb"
     |> should equal 19L
 
-    Day6.findMarker 14 "bvwbjplbgvbhsrlpgdmjqwftvncz" |> should equal 23L
-    Day6.findMarker 14 "nppdvjthqldpwncqszvftbrmjlhg" |> should equal 23L
+    Day6.findMarker 14 "bvwbjplbgvbhsrlpgdmjqwftvncz"
+    |> should equal 23L
+
+    Day6.findMarker 14 "nppdvjthqldpwncqszvftbrmjlhg"
+    |> should equal 23L
 
     Day6.findMarker 14 "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg"
     |> should equal 29L
@@ -87,10 +96,20 @@ let ``day6, part 2`` () =
 
 [<Fact>]
 let ``day 7, part 1`` () =
-   Day7.part1 "test7" () |> should equal 95437L
-   Day7.part1 "7" () |> should equal 1517599L
+    Day7.part1 "test7" () |> should equal 95437L
+    Day7.part1 "7" () |> should equal 1517599L
 
 [<Fact>]
 let ``day 7, part 2`` () =
-   Day7.part2 "test7" () |> should equal 24933642L
-   Day7.part2 "7" () |> should equal 2481982L
+    Day7.part2 "test7" () |> should equal 24933642L
+    Day7.part2 "7" () |> should equal 2481982L
+
+[<Fact>]
+let ``day 8, part 1`` () =
+    Day8.part1 "test8" |> should equal -1L
+    Day8.part1 "8" |> should equal -1L
+
+[<Fact>]
+let ``day 8, part 2`` () =
+    Day8.part2 "test8" |> should equal -1L
+    Day8.part2 "8" |> should equal -1L
