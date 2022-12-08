@@ -24,6 +24,10 @@ module Seq =
         Seq.mapi (fun i v -> (i, v))
         >> Seq.filter (fun v -> f (fst v) (snd v))
         >> Seq.map snd
+        
+    let takeWhilePlus1 predicate s = 
+        seq { yield! Seq.takeWhile predicate s
+              yield! s |> Seq.skipWhile predicate |> Seq.truncate 1 }
 
 let split (c: char) (s: string) = s.Split c
 let splitS (sep: string) (s: string) = Regex.Split(s, sep)
