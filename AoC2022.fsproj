@@ -33,6 +33,7 @@
         <Content Include="input\7.txt" />
         <Content Include="input\test8.txt" />
         <Content Include="input\8.txt" />
+        <Content Include="input\test9.txt" />
     </ItemGroup>
 
     <ItemGroup>

@@ -123,3 +123,4 @@ let ``day 9, part 1`` () =
 let ``day 9, part 2`` () =
     // Day9.part2 "test9" () |> should equal 
     // Day9.part2 "9" () |> should equal 
+    ()
