@@ -24,10 +24,12 @@ module Seq =
         Seq.mapi (fun i v -> (i, v))
         >> Seq.filter (fun v -> f (fst v) (snd v))
         >> Seq.map snd
-        
-    let takeWhilePlus1 predicate s = 
-        seq { yield! Seq.takeWhile predicate s
-              yield! s |> Seq.skipWhile predicate |> Seq.truncate 1 }
+
+    let takeWhilePlus1 predicate s =
+        seq {
+            yield! Seq.takeWhile predicate s
+            yield! s |> Seq.skipWhile predicate |> Seq.truncate 1
+        }
 
 let split (c: char) (s: string) = s.Split c
 let splitS (sep: string) (s: string) = Regex.Split(s, sep)
@@ -68,7 +70,7 @@ let boolToSymbol falseC trueC =
     | false -> falseC
     | true -> trueC
 
-let printImage boolToString (image: bool [] []) =
+let printImage boolToString (image: bool[][]) =
     image
     |> Array.iter (fun row -> (row |> Array.map boolToString |> String.concat "" |> printfn "%s"))
 
@@ -82,12 +84,17 @@ let rec cartesian inputs =
     | _ -> []
 
 let memoize func =
-    let cache = Dictionary<_, _>();
+    let cache = Dictionary<_, _>()
+
     fun key ->
         let exists, value = cache.TryGetValue key
+
         if exists then
             value
         else
             let value = func key
             cache.Add(key, value)
             value
+
+let printLit () = printf "\u2588"
+let printDark () = printf " "
