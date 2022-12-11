@@ -13,14 +13,14 @@ type Monkey =
       Op: Operation
       Divisor: int64
       TrueTarget: int
-      FalseTarget: int }
+      FalseTarget: int
+      Inspections: int64 }
 
 let parseMonkey (lines: string) =
     let [| idLine; itemsLine; opLine; testLine; trueLine; falseLine |] =
         lines.Split '\n'
 
-    let monkeyId =
-        idLine.Replace(":", "").Split(' ') |> Seq.last |> int
+    let monkeyId = idLine.Replace(":", "").Split(' ') |> Seq.last |> int
 
     let items =
         itemsLine.Replace(",", "")
@@ -40,42 +40,84 @@ let parseMonkey (lines: string) =
     let test = testLine.Split(' ') |> Seq.last |> int64
     let ifTrue = trueLine.Split(' ') |> Seq.last |> int
     let ifFalse = falseLine.Split(' ') |> Seq.last |> int
-    let monkey = {
-        Id= monkeyId
-        Items= items
-        Op=operation
-        Divisor=test
-        TrueTarget=ifTrue
-        FalseTarget=ifFalse
-    }
-    printfn "%A" monkey
+
+    let monkey =
+        { Id = monkeyId
+          Items = items
+          Op = operation
+          Divisor = test
+          TrueTarget = ifTrue
+          FalseTarget = ifFalse
+          Inspections = 0L }
+
     monkeyId, monkey
-    
+
 let toSecond (n: int64) = pown (int n) 2 |> int64
 let divBy3 (n: int64) = n / 3L
-let doOperation monkey =
+
+let doOperation divFunc monkey =
     match monkey.Op with
-    | RaiseToSecondPower -> toSecond >> divBy3
-    | Add n -> (+) n >> divBy3
-    | Multiply n -> (*) n >> divBy3
+    | RaiseToSecondPower -> toSecond >> divFunc
+    | Add n -> (+) n >> divFunc
+    | Multiply n -> (*) n >> divFunc
 
 let getToss monkey item =
-        match item % monkey.Divisor with
-        | 0L -> (monkey.TrueTarget, item)
-        | n -> (monkey.FalseTarget, item)
-   
-let monkeyDo monkeyId monkey =
-    let op = doOperation monkey
-    let newItems = monkey.Items |> Array.map (op >> getToss monkey)
-    printfn "%A" newItems
-    (monkeyId, monkey)
-    
-let part1 fn () =
+    match item % monkey.Divisor with
+    | 0L -> (monkey.TrueTarget, item)
+    | _ -> (monkey.FalseTarget, item)
+
+let monkeyDo divFunc monkey =
+    let op = doOperation divFunc monkey
+
+    let newItems =
+        monkey.Items
+        |> Array.map (op >> getToss monkey)
+        |> Array.groupBy fst
+        |> Array.map (fun (target, tosses) -> target, tosses |> Array.map snd)
+        |> Map.ofArray
+
+    newItems
+
+let toss (tosses: Map<int, int64 array>) (monkeyId: int) (monkey: Monkey) =
+    match tosses |> Map.tryFind monkeyId with
+    | None -> monkey
+    | Some items -> { monkey with Items = Array.append monkey.Items items }
+
+let rec doRound divFunc monkeys inTurn =
+    match (monkeys |> Map.keys |> Seq.max) - inTurn with
+    | -1 -> monkeys
+    | _ ->
+        let monkey = monkeys.[inTurn]
+        let inspections = monkey.Inspections
+        let tosses = monkey |> monkeyDo divFunc
+
+        let monkeys' =
+            monkeys
+            |> Map.add
+                inTurn
+                { monkey with
+                    Items = Array.empty
+                    Inspections = inspections + (Seq.length monkey.Items |> int64) }
+            |> Map.map (toss tosses)
+
+        doRound divFunc monkeys' (inTurn + 1)
+
+let rec play divFunc monkeys rounds =
+    match rounds with
+    | 0 -> monkeys
+    | n -> play divFunc (doRound divFunc monkeys 0) (n - 1)
+
+let solve divFunc rounds fn  =
     let input = readInputDelimByEmptyLine fn
     let monkeys = input |> Array.map parseMonkey |> Map.ofArray
-    monkeys |> Map.map monkeyDo 
-    
-    0L
 
+    play divFunc monkeys rounds 
+    |> Map.values
+    |> Seq.map (fun m -> m.Inspections)
+    |> Seq.sortDescending
+    |> Seq.take 2
+    |> Seq.reduce (*)
 
-let part2 fn () = 0L
+let part1 fn () = solve divBy3 20 fn
+
+let part2 fn () = solve id 10000 fn
