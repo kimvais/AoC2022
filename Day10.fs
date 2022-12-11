@@ -19,10 +19,10 @@ let run state instruction =
     | AddX x -> { state with Cycle = state.Cycle + 2; X = state.X + x }
 
 let getStates fn =
-        readInput fn
-        |> Seq.map parse
-        |> Seq.scan run { Cycle = 1; X = 1 }
-    
+    readInput fn
+    |> Seq.map parse
+    |> Seq.scan run { Cycle = 1; X = 1 }
+
 let part1 fn () =
     let cycles = [ 20; 60; 100; 140; 180; 220 ]
 
@@ -36,11 +36,9 @@ let part1 fn () =
         |> (fun a -> int64 c, a.X))
     |> Seq.sumBy (fun (c, x) -> c * x)
 
-let printLit () = printf "\u2588"
-let printDark () = printf " "
-
 let rec draw rem state cycle =
     let pos = cycle % 40
+
     match cycle with
     | 240 -> ()
     | c ->
@@ -48,15 +46,18 @@ let rec draw rem state cycle =
             match state.Cycle with
             | n when n >= c -> state, rem
             | _ -> Seq.head rem, Seq.tail rem
+
         match abs (int s.X - pos) with
-        | 0 |1 -> printLit ()
+        | 0
+        | 1 -> printLit ()
         | _ -> printDark ()
+        
         if pos = 39 then
             printfn ""
+
         draw r s (cycle + 1)
-    
+
 let part2 fn () =
     let states = getStates fn
     draw (Seq.tail states) (Seq.head states) 0
     0L
-        

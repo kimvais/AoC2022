@@ -97,4 +97,4 @@ let memoize func =
             value
 
 let printLit () = printf "\u2588"
-let printDark () = printf " "
+let printDark () = printf "\u00b7"
