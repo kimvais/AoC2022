@@ -1,5 +1,6 @@
 ﻿module AoC2022.Day11
 
+open System.Numerics
 open AoC2022.Utils
 
 type Operation =
@@ -15,6 +16,9 @@ type Monkey =
       TrueTarget: int
       FalseTarget: int
       Inspections: int64 }
+
+// let magic = 96577L
+let magic = 9699690L
 
 let parseMonkey (lines: string) =
     let [| idLine; itemsLine; opLine; testLine; trueLine; falseLine |] =
@@ -52,22 +56,25 @@ let parseMonkey (lines: string) =
 
     monkeyId, monkey
 
-let toSecond (n: int64) = pown (int n) 2 |> int64
+let toSecond (n: int64) =
+    let b = bigint n
+    BigInteger.ModPow(b, 2I, magic) |> int64
+    
 let divBy3 (n: int64) = n / 3L
 
-let doOperation divFunc monkey =
+let doOperation manageWorryLevel monkey =
     match monkey.Op with
-    | RaiseToSecondPower -> toSecond >> divFunc
-    | Add n -> (+) n >> divFunc
-    | Multiply n -> (*) n >> divFunc
+    | RaiseToSecondPower -> toSecond >> manageWorryLevel 
+    | Add n -> (+) n >> manageWorryLevel
+    | Multiply n -> (*) n >> manageWorryLevel
 
 let getToss monkey item =
     match item % monkey.Divisor with
     | 0L -> (monkey.TrueTarget, item)
     | _ -> (monkey.FalseTarget, item)
 
-let monkeyDo divFunc monkey =
-    let op = doOperation divFunc monkey
+let monkeyDo manageWorryLevel monkey =
+    let op = doOperation manageWorryLevel monkey
 
     let newItems =
         monkey.Items
@@ -83,13 +90,13 @@ let toss (tosses: Map<int, int64 array>) (monkeyId: int) (monkey: Monkey) =
     | None -> monkey
     | Some items -> { monkey with Items = Array.append monkey.Items items }
 
-let rec doRound divFunc monkeys inTurn =
+let rec doRound manageWorryLevel monkeys inTurn =
     match (monkeys |> Map.keys |> Seq.max) - inTurn with
     | -1 -> monkeys
     | _ ->
         let monkey = monkeys.[inTurn]
         let inspections = monkey.Inspections
-        let tosses = monkey |> monkeyDo divFunc
+        let tosses = monkey |> monkeyDo manageWorryLevel
 
         let monkeys' =
             monkeys
@@ -100,24 +107,27 @@ let rec doRound divFunc monkeys inTurn =
                     Inspections = inspections + (Seq.length monkey.Items |> int64) }
             |> Map.map (toss tosses)
 
-        doRound divFunc monkeys' (inTurn + 1)
+        doRound manageWorryLevel monkeys' (inTurn + 1)
 
-let rec play divFunc monkeys rounds =
+let rec play manageWorryLevel monkeys rounds =
     match rounds with
     | 0 -> monkeys
-    | n -> play divFunc (doRound divFunc monkeys 0) (n - 1)
+    | n -> play manageWorryLevel (doRound manageWorryLevel monkeys 0) (n - 1)
 
-let solve divFunc rounds fn  =
+let solve rounds fn  =
     let input = readInputDelimByEmptyLine fn
     let monkeys = input |> Array.map parseMonkey |> Map.ofArray
-
-    play divFunc monkeys rounds 
+    let magic = monkeys |> Map.values |> Seq.map (fun m -> m.Divisor) |> Seq.reduce (*)
+    printfn $"%d{magic}"
+    let manageWorryLevel i =
+        i % magic
+    play manageWorryLevel monkeys rounds 
     |> Map.values
     |> Seq.map (fun m -> m.Inspections)
     |> Seq.sortDescending
     |> Seq.take 2
     |> Seq.reduce (*)
 
-let part1 fn () = solve divBy3 20 fn
+let part1 fn () = solve 20 fn
 
-let part2 fn () = solve id 10000 fn
+let part2 fn () = solve 10000 fn

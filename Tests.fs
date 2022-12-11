@@ -116,7 +116,7 @@ let ``day 8, part 2`` () =
 
 [<Fact>]
 let ``day 9, part 1`` () =
-    Day9.part1 "test9" () |> should equal 0L
+    Day9.part1 "test9" () |> should equal 13L
     // Day9.part2 "9" () |> should equal 
    
 [<Fact>]
@@ -127,7 +127,7 @@ let ``day 9, part 2`` () =
 
 [<Fact>]
 let ``day 10, part 1`` () =
-    Day10.part1 "test10" () |> should equal 13140
+    Day10.part1 "test10" () |> should equal 13140L
     
 [<Fact>]
 let ``day 11, part 1`` () =
