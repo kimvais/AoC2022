@@ -49,11 +49,31 @@ let parseMonkey (lines: string) =
         FalseTarget=ifFalse
     }
     printfn "%A" monkey
-    monkey
+    monkeyId, monkey
+    
+let toSecond (n: int64) = pown (int n) 2 |> int64
+let divBy3 (n: int64) = n / 3L
+let doOperation monkey =
+    match monkey.Op with
+    | RaiseToSecondPower -> toSecond >> divBy3
+    | Add n -> (+) n >> divBy3
+    | Multiply n -> (*) n >> divBy3
 
+let getToss monkey item =
+        match item % monkey.Divisor with
+        | 0L -> (monkey.TrueTarget, item)
+        | n -> (monkey.FalseTarget, item)
+   
+let monkeyDo monkeyId monkey =
+    let op = doOperation monkey
+    let newItems = monkey.Items |> Array.map (op >> getToss monkey)
+    printfn "%A" newItems
+    (monkeyId, monkey)
+    
 let part1 fn () =
     let input = readInputDelimByEmptyLine fn
-    let monkeys = input |> Array.map parseMonkey
+    let monkeys = input |> Array.map parseMonkey |> Map.ofArray
+    monkeys |> Map.map monkeyDo 
     
     0L
 
