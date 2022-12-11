@@ -56,25 +56,33 @@ let parseMonkey (lines: string) =
 
     monkeyId, monkey
 
+let pow2 n = pown (int n) 2 |> int64
 let toSecond (n: int64) =
     let b = bigint n
     BigInteger.ModPow(b, 2I, magic) |> int64
     
 let divBy3 (n: int64) = n / 3L
 
-let doOperation manageWorryLevel monkey =
-    match monkey.Op with
-    | RaiseToSecondPower -> toSecond >> manageWorryLevel 
-    | Add n -> (+) n >> manageWorryLevel
-    | Multiply n -> (*) n >> manageWorryLevel
+let doOperation isPart2 monkey =
+    match isPart2 with
+    | true ->
+        match monkey.Op with
+        | RaiseToSecondPower -> toSecond 
+        | Add n -> (+) n 
+        | Multiply n -> (*) n 
+    | false ->
+        match monkey.Op with
+        | RaiseToSecondPower -> pow2 >> divBy3
+        | Add n -> (+) n >> divBy3
+        | Multiply n -> (*) n >> divBy3
 
 let getToss monkey item =
     match item % monkey.Divisor with
     | 0L -> (monkey.TrueTarget, item)
     | _ -> (monkey.FalseTarget, item)
 
-let monkeyDo manageWorryLevel monkey =
-    let op = doOperation manageWorryLevel monkey
+let monkeyDo isPart2 () monkey  =
+    let op = doOperation isPart2 monkey
 
     let newItems =
         monkey.Items
@@ -90,13 +98,13 @@ let toss (tosses: Map<int, int64 array>) (monkeyId: int) (monkey: Monkey) =
     | None -> monkey
     | Some items -> { monkey with Items = Array.append monkey.Items items }
 
-let rec doRound manageWorryLevel monkeys inTurn =
+let rec doRound isPart2 monkeys inTurn =
     match (monkeys |> Map.keys |> Seq.max) - inTurn with
     | -1 -> monkeys
     | _ ->
         let monkey = monkeys.[inTurn]
         let inspections = monkey.Inspections
-        let tosses = monkey |> monkeyDo manageWorryLevel
+        let tosses = monkey |> monkeyDo isPart2 ()
 
         let monkeys' =
             monkeys
@@ -107,27 +115,27 @@ let rec doRound manageWorryLevel monkeys inTurn =
                     Inspections = inspections + (Seq.length monkey.Items |> int64) }
             |> Map.map (toss tosses)
 
-        doRound manageWorryLevel monkeys' (inTurn + 1)
+        doRound isPart2 monkeys' (inTurn + 1)
 
-let rec play manageWorryLevel monkeys rounds =
+let rec play isPart2 monkeys rounds =
     match rounds with
     | 0 -> monkeys
-    | n -> play manageWorryLevel (doRound manageWorryLevel monkeys 0) (n - 1)
+    | n -> play isPart2 (doRound isPart2 monkeys 0) (n - 1)
 
-let solve rounds fn  =
+let solve isPart2 rounds fn  =
     let input = readInputDelimByEmptyLine fn
     let monkeys = input |> Array.map parseMonkey |> Map.ofArray
     let magic = monkeys |> Map.values |> Seq.map (fun m -> m.Divisor) |> Seq.reduce (*)
     printfn $"%d{magic}"
     let manageWorryLevel i =
         i % magic
-    play manageWorryLevel monkeys rounds 
+    play isPart2 monkeys rounds 
     |> Map.values
     |> Seq.map (fun m -> m.Inspections)
     |> Seq.sortDescending
     |> Seq.take 2
     |> Seq.reduce (*)
 
-let part1 fn () = solve 20 fn
+let part1 fn () = solve false 20 fn
 
-let part2 fn () = solve 10000 fn
+let part2 fn () = solve true 10000 fn
