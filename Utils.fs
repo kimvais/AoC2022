@@ -157,7 +157,7 @@ module AStar =
                                 let newCameFrom = Map.add neighbour current cameFrom
                                 newOpenSet, newGScores, newFScores, newCameFrom
                             ) (rest, gScores, fScores, cameFrom)
-                    printfn "%A" current
+                    // printfn "%A" current
                     crawler (Set.add current closedSet) next
                 | _ -> None
 
