@@ -30,10 +30,10 @@ let main argv =
     | "10b" -> Day10.part2 "10" ()
     | "11" -> Day11.part1 "11" ()
     | "11b" -> Day11.part2 "11" ()
-    | "test" -> Day11.part2 "test11" ()
-    (*
     | "12" -> Day12.part1 "12" ()
     | "12b" -> Day12.part2 "12" ()
+    | "test" -> Day12.part1 "test12" ()
+    (*
     | "13" -> Day13.part1 "13" ()
     | "13b" -> Day13.part2 "13" ()
     | "14" -> Day14.part1 "14" ()
