@@ -20,7 +20,7 @@ let printGrid grid =
     grid |> List.iter printRow
     printfn ""
 
-let getNeighbourCoords (x,y) = seq [ x - 1, y; x, y - 1; x + 1, y; x, y + 1 ]
+let getNeighbourCoords (x, y) = seq [ x - 1, y; x, y - 1; x + 1, y; x, y + 1 ]
 
 let charToL (c: char) =
     match c with
@@ -38,48 +38,61 @@ let loadGrid fn =
 
     grid
 
-
-let findCoodsByValue grid value = 
+let getValue (grid: int64 list list) (x,y) = grid[x].[y]
+let findCoodsByValue grid value =
     let x = grid |> List.findIndex (fun l -> l |> List.contains value)
     let y = grid.[x] |> List.findIndex (fun i -> i = value)
     x, y
 
-let part1 fn () =
+let solve fn startValue targetValue =
     let grid = loadGrid fn
 
     let width, height = List.length grid.[0], List.length grid
 
-    let start = findCoodsByValue grid 0L
-    let goal = findCoodsByValue grid 27L
+    let start = findCoodsByValue grid startValue
     // printGrid grid
     printfn $"Start %A{start}"
-    printfn $"Goal %A{goal}"
 
     let neighbours (x, y) =
-        let ret = getNeighbourCoords (x,y)  |> Seq.filter (fun (nx, ny) ->
-            nx >= 0
-            && ny >= 0
-            && nx < height 
-            && ny < width 
-            && match grid.[nx].[ny] - grid.[x].[y] with
-               | hd when hd < 2L -> true
-               | _ -> false)
+        let ret =
+            getNeighbourCoords (x, y)
+            |> Seq.filter (fun (nx, ny) ->
+                nx >= 0
+                && ny >= 0
+                && nx < height
+                && ny < width
+                && match grid.[x].[y] - grid.[nx].[ny] with
+                   | hd when hd < 2L -> true
+                   | _ -> false)
         // printfn $"Neighbours for [%d{x}, %d{y}] = %A{ret}"
         ret
+
     let gScore _ _ = 1.
-    let fScore (x, y) (gx, gy) = sqrt ((float gx - float x) ** 2. + (float gy - float y) ** 2.)
+    let fScore _ = 1.
 
-    match
-        AStar.search
-            start
-            goal
-            { neighbours = neighbours
-              gCost = gScore
-              fCost = fScore
-              maxIterations = None }
-    with
-    | Some path ->
-        path |> Seq.length |> int64 |> (+) -1L
-    | None -> 0L
+    let path =
+        match
+            AStar.search
+                start
+                { neighbours = neighbours
+                  gCost = gScore
+                  fCost = fScore
+                  isTarget  = getValue grid >> (=) targetValue
+                  maxIterations = None }
+        with
+        | Some p -> p
+        | None -> failwith "No path found"
 
-let part2 fn () = 0L
+    path |> Seq.map (fun (x,y) -> grid.[x].[y]) |> List.ofSeq |> List.rev
+
+let part1 fn () =
+    let path = solve fn 0L 27L
+    printfn "%A" path
+    path |> Seq.length |> int64 |> (+) -1L
+
+
+
+let part2 fn () = 
+    let path = solve fn 27L 1L
+    printfn "%A" path
+    path |> Seq.length |> int64 |> (+) -1L

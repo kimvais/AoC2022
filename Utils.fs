@@ -118,14 +118,15 @@ module AStar =
             /// Given two nodes, return the f cost between them. This is a heuristic score used from a given node to the goal.
             /// Line-of-sight distance is an example of how this might be defined.
             /// </summary>
-            fCost: 'a -> 'a -> float
+            fCost: 'a -> float
             /// <summary>
             /// The maximum number of tiles to check - used to limit overly long searches when accuracy is not paramount
             /// </summary>
             maxIterations: int option
+            isTarget: 'a -> bool
         }
 
-    let search<'a when 'a : comparison> start goal config : seq<'a> option =
+    let search<'a when 'a : comparison> start config : seq<'a> option =
 
         let rec reconstructPath cameFrom current =
             seq {
@@ -140,7 +141,7 @@ module AStar =
             | Some c when c = Set.count closedSet -> None
             | _ ->
                 match List.sortBy (fun n -> Map.find n fScores) openSet with
-                | current::_ when current = goal -> Some <| reconstructPath cameFrom current 
+                | current::_ when config.isTarget current -> Some <| reconstructPath cameFrom current 
                 | current::rest ->
                     let gScore = Map.find current gScores
                     let next =
@@ -153,7 +154,7 @@ module AStar =
                             else
                                 let newOpenSet = if List.contains neighbour openSet then openSet else neighbour::openSet
                                 let newGScores = Map.add neighbour tentativeGScore gScores
-                                let newFScores = Map.add neighbour (tentativeGScore + config.fCost neighbour goal) fScores
+                                let newFScores = Map.add neighbour (tentativeGScore + config.fCost neighbour) fScores
                                 let newCameFrom = Map.add neighbour current cameFrom
                                 newOpenSet, newGScores, newFScores, newCameFrom
                             ) (rest, gScores, fScores, cameFrom)
@@ -162,5 +163,5 @@ module AStar =
                 | _ -> None
 
         let gScores = Map.ofList [start, 0.]
-        let fScores = Map.ofList [start, config.fCost start goal]
+        let fScores = Map.ofList [start, config.fCost start]
         crawler Set.empty ([start], gScores, fScores, Map.empty)
