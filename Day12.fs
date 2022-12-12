@@ -44,7 +44,7 @@ let findCoodsByValue grid value =
     let y = grid.[x] |> List.findIndex (fun i -> i = value)
     x, y
 
-let solve fn startValue targetValue =
+let solve compFunc fn startValue targetValue =
     let grid = loadGrid fn
 
     let width, height = List.length grid.[0], List.length grid
@@ -61,8 +61,8 @@ let solve fn startValue targetValue =
                 && ny >= 0
                 && nx < height
                 && ny < width
-                && match grid.[x].[y] - grid.[nx].[ny] with
-                   | hd when hd < 2L -> true
+                && match grid.[nx].[ny] - grid.[x].[y] with
+                   | hd when compFunc hd -> true
                    | _ -> false)
         // printfn $"Neighbours for [%d{x}, %d{y}] = %A{ret}"
         ret
@@ -86,13 +86,11 @@ let solve fn startValue targetValue =
     path |> Seq.map (fun (x,y) -> grid.[x].[y]) |> List.ofSeq |> List.rev
 
 let part1 fn () =
-    let path = solve fn 0L 27L
+    let path = solve ((>) 2L) fn 0L 27L
     printfn "%A" path
     path |> Seq.length |> int64 |> (+) -1L
 
-
-
 let part2 fn () = 
-    let path = solve fn 27L 1L
+    let path = solve ((<) -2L) fn 27L 1L
     printfn "%A" path
     path |> Seq.length |> int64 |> (+) -1L
