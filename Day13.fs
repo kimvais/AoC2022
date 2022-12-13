@@ -7,29 +7,27 @@ open FSharp.Data.Runtime.BaseTypes
 
 type Packet =
     | Int of int
-    | PacketList of Packet
-    
-type NestedArrays = JsonProvider<""" [ [1, 2, 3], [4, 5, [6, 7]], [8, 9, 10, [11, 12, 13, 14]] ] """>
+    | List of Packet list
 
 let parseList json = JsonValue.Parse(json)
 
 let rec parse json =
     match json with
-    | JsonValue.Number n -> Int (int n)
-    | JsonValue.Array a -> (a |> List.ofArray) |> List.map parse |> PacketList
-    
+    | JsonValue.Number n -> Int(int n)
+    | JsonValue.Array a -> (a |> List.ofArray) |> List.map parse |> List
+
 let parseRecord r =
     let pair = r |> splitByLinefeed
-    let left = (parseList ("[" + (Seq.head pair) + "]"))[0]
-    let right = (parseList ("[" + (Seq.last pair) + "]"))[0]
-    printfn $"%A{left} %A{right}"
-    (parse left), right
+    let left = parseList (Seq.head pair) |> parse
+    let right = parseList (Seq.last pair) |> parse
+    match left, right with 
+    | List l, List r -> l, r
+    | _ -> failwith "Error: one of the lists is not a list!"
 
 let part1 fn () =
     let input = readInputDelimByEmptyLine fn
     let records = input |> Array.map parseRecord
-    let left, right = records |> Seq.last
-    printfn "%A" left
+    printfn "%A" records
     0L
 
 let part2 fn () = 0L
