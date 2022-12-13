@@ -7,8 +7,15 @@ open System.Text.RegularExpressions
 
 let readLines filePath = File.ReadLines(filePath)
 
-let readInput (s: string) = readLines (__SOURCE_DIRECTORY__ + (sprintf "/input/%s.txt" s))
+let getInputFilename s = (__SOURCE_DIRECTORY__ + (sprintf "/input/%s.txt" s))
 
+let readInput (s: string) = 
+    getInputFilename s |> readLines
+
+let readAsTest (s: string) =
+    let fn = getInputFilename s
+    File.ReadAllText(fn)
+    
 let getProblem (a: seq<string>) : string = a |> Seq.head
 
 module Seq =
