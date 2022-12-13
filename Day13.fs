@@ -1,59 +1,35 @@
 ﻿module AoC2022.Day13
 
-open System
+open System.Text.Json.Nodes
 open AoC2022.Utils
 open FSharp.Data
+open FSharp.Data.Runtime.BaseTypes
 
-open System.Runtime.CompilerServices
+type Packet =
+    | Int of int
+    | PacketList of Packet
+    
+type NestedArrays = JsonProvider<""" [ [1, 2, 3], [4, 5, [6, 7]], [8, 9, 10, [11, 12, 13, 14]] ] """>
 
-type Provider = JsonProvider<"input/test13.txt", SampleIsList=true>
+let parseList json = JsonValue.Parse(json)
 
-type NestedList =
-    | Integer of int
-    | List of NestedList list
-
-// Define an active pattern for parsing integers
-let (|Integer|_|) (input: string) =
-    match System.Int32.TryParse(input) with
-    | true, i -> Some (Integer i)
-    | _ -> None
-
-// Define an active pattern for parsing nested lists
-let rec (|List|_|) (input: string) =
-    if input.StartsWith("[") && input.EndsWith("]") then
-        let listString = input.Substring(1, input.Length - 2)
-        let elements = parseList listString
-        Some (List elements)
-    else None
-
-and parseList (input: string) : NestedList list =
-    // Split the input string into individual elements, using ',' as the delimiter
-    let elements = input.Split(',', StringSplitOptions.RemoveEmptyEntries)
-
-    // Use pattern matching to process each element
-    let rec parseElement (e: string) : NestedList =
-        printfn $"%A{e}"
-        // Use the active patterns to parse and match the element
-        match e with
-        | Integer i -> Integer i
-        | List l -> List l
-        | _ -> failwith "Invalid input"
-
-    // Map the parsed elements to a list of NestedList values
-    elements |> Array.map parseElement |> List.ofArray 
-
-
+let rec parse json =
+    match json with
+    | JsonValue.Number n -> Int (int n)
+    | JsonValue.Array a -> (a |> List.ofArray) |> List.map parse |> PacketList
+    
 let parseRecord r =
     let pair = r |> splitByLinefeed
-    let left = parseList (Seq.head pair)
-    let right = parseList (Seq.last pair)
+    let left = (parseList ("[" + (Seq.head pair) + "]"))[0]
+    let right = (parseList ("[" + (Seq.last pair) + "]"))[0]
     printfn $"%A{left} %A{right}"
-    left, right
-    
+    (parse left), right
+
 let part1 fn () =
-    let records = readInputDelimByEmptyLine fn |> Seq.map parseRecord
-    printfn $"%A{records}"
-    // records |> Seq.map (parseRecord) |> printfn "%A"
+    let input = readInputDelimByEmptyLine fn
+    let records = input |> Array.map parseRecord
+    let left, right = records |> Seq.last
+    printfn "%A" left
     0L
 
 let part2 fn () = 0L
