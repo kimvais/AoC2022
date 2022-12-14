@@ -32,38 +32,46 @@ let parseInput fn =
     )
     |> Seq.concat
 
-let rec fall v blocks x y =
-    match y with
-    | n when n >= v -> true, blocks
-    | _ -> 
+let rec fall finishCondition isBlocked blocks x y =
+    let isFinished = finishCondition blocks x y
+
+    match isFinished with
+    | true -> true, blocks
+    | false ->
         // printfn $"Falling at %d{x},%d{y}"
-        match Set.contains (x, y + 1) blocks with
-        | false -> fall v blocks x (y + 1)
+        match isBlocked blocks x (y + 1) () with
+        | false -> fall finishCondition isBlocked blocks x (y + 1)
         | true ->
-            match Set.contains (x - 1, y + 1) blocks with
-            | false -> fall v blocks (x - 1) (y + 1)
+            match isBlocked blocks (x - 1) (y + 1) () with
+            | false -> fall finishCondition isBlocked blocks (x - 1) (y + 1)
             | true ->
-                match Set.contains (x + 1, y + 1) blocks with
-                | false -> fall v blocks (x + 1) (y + 1)
+                match isBlocked blocks (x + 1) (y + 1) () with
+                | false -> fall finishCondition isBlocked blocks (x + 1) (y + 1)
                 | true ->
                     // printfn $"Fell at %d{x},%d{y}"
                     (false, Set.add (x, y) blocks)
 
-let rec drop voidStartsAt blocks =
-    let result, newBlocks = fall voidStartsAt blocks 500 0
+let rec drop finishCondition isBlocked blocks =
+    let result, newBlocks = fall finishCondition isBlocked blocks 500 0
+
     match result with
-    | true -> blocks 
-    | false -> drop voidStartsAt newBlocks 
-    
+    | true -> blocks
+    | false -> drop finishCondition isBlocked newBlocks
+
 let part1 fn () =
     let lines = parseInput fn
     let blocks = lines |> Set.ofSeq
     let voidStartsAt = lines |> Seq.maxBy (snd >> (+) 1) |> snd
+    let finishCondition _ _ y = y >= voidStartsAt
+    let isBlocked b x y () = Set.contains (x, y) b
 
     // printfn "%A" lines
     // printfn $"Void: %i{voidStartsAt}"
     let blockCount = Set.count blocks
     // printfn "%d" blockCount
-    drop voidStartsAt blocks |> Set.count |> (+) -blockCount |> int64
+    drop finishCondition isBlocked blocks
+    |> Set.count
+    |> (+) -blockCount
+    |> int64
 
 let part2 fn () = 0L
