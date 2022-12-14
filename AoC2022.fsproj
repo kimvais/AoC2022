@@ -46,6 +46,7 @@
         <Content Include="input\test12.txt" />
         <Content Include="input\12.txt" />
         <Content Include="input\test13.txt" />
+        <Content Include="input\test14.txt" />
     </ItemGroup>
 
     <ItemGroup>
