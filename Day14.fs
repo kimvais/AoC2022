@@ -4,10 +4,10 @@ open AoC2022.Utils
 
 let parseCoords (s: string) =
     s.Split(',')
-    |> Array.map int64
+    |> Array.map int
     |> (fun a -> Seq.head a, Seq.last a)
 
-let makeBlocks ((xa: int64, ya: int64), (xb: int64, yb: int64)) =
+let makeBlocks ((xa: int, ya: int), (xb: int, yb: int)) =
     let x1 = [ xa; xb ] |> Seq.min
     let x2 = [ xa; xb ] |> Seq.max
     let y1 = [ ya; yb ] |> Seq.min
@@ -32,15 +32,38 @@ let parseInput fn =
     )
     |> Seq.concat
 
+let rec fall v blocks x y =
+    match y with
+    | n when n >= v -> true, blocks
+    | _ -> 
+        // printfn $"Falling at %d{x},%d{y}"
+        match Set.contains (x, y + 1) blocks with
+        | false -> fall v blocks x (y + 1)
+        | true ->
+            match Set.contains (x - 1, y + 1) blocks with
+            | false -> fall v blocks (x - 1) (y + 1)
+            | true ->
+                match Set.contains (x + 1, y + 1) blocks with
+                | false -> fall v blocks (x + 1) (y + 1)
+                | true ->
+                    // printfn $"Fell at %d{x},%d{y}"
+                    (false, Set.add (x, y) blocks)
+
+let rec drop voidStartsAt blocks =
+    let result, newBlocks = fall voidStartsAt blocks 500 0
+    match result with
+    | true -> blocks 
+    | false -> drop voidStartsAt newBlocks 
+    
 let part1 fn () =
     let lines = parseInput fn
     let blocks = lines |> Set.ofSeq
-    let voidRight = lines |> Seq.maxBy (fst >> (+) 1L) |> fst
-    let voidLeft = lines |> Seq.minBy (fst >> (+) 1L) |> fst
-    
-    printfn "%A" lines
-    printfn $"Left: %i{voidLeft} - Right: %i{voidRight}"
-    printfn "%d" (Set.count blocks)
-    0L
+    let voidStartsAt = lines |> Seq.maxBy (snd >> (+) 1) |> snd
+
+    // printfn "%A" lines
+    // printfn $"Void: %i{voidStartsAt}"
+    let blockCount = Set.count blocks
+    // printfn "%d" blockCount
+    drop voidStartsAt blocks |> Set.count |> (+) -blockCount |> int64
 
 let part2 fn () = 0L
