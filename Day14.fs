@@ -39,13 +39,13 @@ let rec fall finishCondition isBlocked blocks x y =
     | true -> true, blocks
     | false ->
         // printfn $"Falling at %d{x},%d{y}"
-        match isBlocked blocks x (y + 1) () with
+        match isBlocked blocks x (y + 1) with
         | false -> fall finishCondition isBlocked blocks x (y + 1)
         | true ->
-            match isBlocked blocks (x - 1) (y + 1) () with
+            match isBlocked blocks (x - 1) (y + 1) with
             | false -> fall finishCondition isBlocked blocks (x - 1) (y + 1)
             | true ->
-                match isBlocked blocks (x + 1) (y + 1) () with
+                match isBlocked blocks (x + 1) (y + 1) with
                 | false -> fall finishCondition isBlocked blocks (x + 1) (y + 1)
                 | true ->
                     // printfn $"Fell at %d{x},%d{y}"
@@ -63,15 +63,24 @@ let part1 fn () =
     let blocks = lines |> Set.ofSeq
     let voidStartsAt = lines |> Seq.maxBy (snd >> (+) 1) |> snd
     let finishCondition _ _ y = y >= voidStartsAt
-    let isBlocked b x y () = Set.contains (x, y) b
+    let isBlocked b x y  = Set.contains (x, y) b
 
-    // printfn "%A" lines
-    // printfn $"Void: %i{voidStartsAt}"
     let blockCount = Set.count blocks
-    // printfn "%d" blockCount
     drop finishCondition isBlocked blocks
     |> Set.count
     |> (+) -blockCount
     |> int64
 
-let part2 fn () = 0L
+let part2 fn () = 
+    let lines = parseInput fn
+    let blocks = lines |> Set.ofSeq
+    let floor = lines |> Seq.maxBy snd |> snd |> (+) 2
+    printfn $"Floor: %i{floor}"
+    let finishCondition b _ _ = Set.contains (500, 0) b
+    let isBlocked b x y = Set.contains (x, y) b || y >= floor
+    let blockCount = Set.count blocks
+    
+    drop finishCondition isBlocked blocks
+    |> Set.count
+    |> (+) -blockCount
+    |> int64

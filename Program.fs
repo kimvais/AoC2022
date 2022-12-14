@@ -36,7 +36,7 @@ let main argv =
     | "13b" -> Day13.part2 "13" ()
     | "14" -> Day14.part1 "14" ()
     | "14b" -> Day14.part2 "14" ()
-    | "test" -> Day14.part1 "14" ()
+    | "test" -> Day14.part2 "14" ()
     (*
     | "15" -> Day15.part1 "15" ()
     | "15b" -> Day15.part2 "15" ()
