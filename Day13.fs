@@ -50,7 +50,7 @@ let compareSnd (_, a) (_, b) = compare a b
 
 let part2 fn () =
     let input =
-        (readLines fn |> Seq.filter (fun s -> s <> ""))
+        (readInput fn |> Seq.filter (fun s -> s <> ""))
         |> Array.ofSeq
         |> Array.map (fun a -> false, a)
         |> Array.append [| (true, "[[2]]")

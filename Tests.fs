@@ -149,11 +149,11 @@ let ``day 12, part 2`` () =
     Day12.part2 "12" () |> should equal 399L
    
 [<Fact>]
-let ``day 13, part 1`` fn () =
-    Day13.part1 "test13" |> should equal 13L
-    Day13.part2 "14" |> should equal 5292L
+let ``day 13, part 1`` () =
+    Day13.part1 "test13" () |> should equal 13L
+    Day13.part1 "13" () |> should equal 5292L
     
 [<Fact>]
-let ``day 13, part 2`` fn () =
-    Day13.part2 "test13" |> should equal 140L
-    
+let ``day 13, part 2`` () =
+    Day13.part2 "test13" () |> should equal 140L
+    Day13.part2 "13" () |> should equal 23868L
