@@ -1,5 +1,6 @@
 ﻿module AoC2022.Day11
 
+open System.Numerics
 open AoC2022.Utils
 
 type Operation =
@@ -53,21 +54,32 @@ let parseMonkey (lines: string) =
     monkeyId, monkey
 
 let toSecond (n: int64) = pown (int n) 2 |> int64
+let modPowWithMagic (magic: int64) (n:int64) =
+    let b = bigint n
+    BigInteger.ModPow(b, 2I, (bigint magic)) |> int64
 let divBy3 (n: int64) = n / 3L
 
-let doOperation divFunc monkey =
+let doOperation monkey =
     match monkey.Op with
-    | RaiseToSecondPower -> toSecond >> divFunc
-    | Add n -> (+) n >> divFunc
-    | Multiply n -> (*) n >> divFunc
+    | RaiseToSecondPower -> toSecond >> divBy3
+    | Add n -> (+) n >> divBy3
+    | Multiply n -> (*) n >> divBy3
 
+let doOperation2 magic monkey =
+    match monkey.Op with
+    |RaiseToSecondPower -> modPowWithMagic magic
+    | Add n -> (+) n >> ((%) magic)
+    | Multiply n -> (*) n >> ((%) magic)
+    
 let getToss monkey item =
     match item % monkey.Divisor with
     | 0L -> (monkey.TrueTarget, item)
     | _ -> (monkey.FalseTarget, item)
 
-let monkeyDo divFunc monkey =
-    let op = doOperation divFunc monkey
+let monkeyDo magic monkey =
+    let op = match magic with
+        | None -> doOperation monkey
+        | Some m -> doOperation2 m monkey
 
     let newItems =
         monkey.Items
@@ -122,10 +134,10 @@ let moduloMagic magic n =
 let part1 fn () =
     let input = readInputDelimByEmptyLine fn
     let monkeys = input |> Array.map parseMonkey |> Map.ofArray
-    solve divBy3 20 monkeys
+    solve None  20 monkeys
 
 let part2 fn () =
     let input = readInputDelimByEmptyLine fn
     let monkeys = input |> Array.map parseMonkey |> Map.ofArray
-    let magic = monkeys |> Map.values |> Seq.map (fun m -> m.Divisor) |> Seq.reduce (*)
-    solve (moduloMagic magic) 10000 monkeys
+    let magic = monkeys |> Map.values |> Seq.map (fun m -> m.Divisor) |> Seq.reduce (*) 
+    solve (Some magic) 10000 monkeys
