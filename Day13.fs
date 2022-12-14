@@ -46,4 +46,25 @@ let part1 fn () =
     |> Array.sumBy fst
     |> int64
 
-let part2 fn () = 0L
+let compareSnd (_, a) (_, b) = compare a b
+
+let part2 fn () =
+    let input =
+        (readLines fn |> Seq.filter (fun s -> s <> ""))
+        |> Array.ofSeq
+        |> Array.map (fun a -> false, a)
+        |> Array.append [| (true, "[[2]]")
+                           (true, "[[6]]") |]
+
+    let packets =
+        input
+        |> Array.map (fun (i, p) -> i, (p |> parseList |> parse))
+        |> Array.sortWith compareSnd
+
+    packets
+    |> Array.mapi (fun i (isDivider, _) ->
+        match isDivider with
+        | true -> i + 1
+        | false -> 1)
+    |> Array.reduce (*)
+    |> int64
