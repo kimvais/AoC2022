@@ -107,9 +107,7 @@ let rec play divFunc monkeys rounds =
     | 0 -> monkeys
     | n -> play divFunc (doRound divFunc monkeys 0) (n - 1)
 
-let solve divFunc rounds fn  =
-    let input = readInputDelimByEmptyLine fn
-    let monkeys = input |> Array.map parseMonkey |> Map.ofArray
+let solve divFunc rounds monkeys  =
 
     play divFunc monkeys rounds 
     |> Map.values
@@ -118,6 +116,16 @@ let solve divFunc rounds fn  =
     |> Seq.take 2
     |> Seq.reduce (*)
 
-let part1 fn () = solve divBy3 20 fn
+let moduloMagic magic n =
+    n % magic
+    
+let part1 fn () =
+    let input = readInputDelimByEmptyLine fn
+    let monkeys = input |> Array.map parseMonkey |> Map.ofArray
+    solve divBy3 20 monkeys
 
-let part2 fn () = solve id 10000 fn
+let part2 fn () =
+    let input = readInputDelimByEmptyLine fn
+    let monkeys = input |> Array.map parseMonkey |> Map.ofArray
+    let magic = monkeys |> Map.values |> Seq.map (fun m -> m.Divisor) |> Seq.reduce (*)
+    solve (moduloMagic magic) 10000 monkeys
