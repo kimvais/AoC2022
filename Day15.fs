@@ -31,7 +31,7 @@ let findSensorsWithinRange row sensors = sensors |> Seq.filter (fun s -> (abs (s
 
 let part1 rowNo fn () =
     let coords = parse fn
-    printfn $"%A{coords}"
+    // printfn $"%A{coords}"
     // let distances = coords |> Seq.map getDistance
     // printfn $"%A{distances}"
 
@@ -46,13 +46,16 @@ let part1 rowNo fn () =
     let coverage =
         withInRange
         |> Seq.map (fun s -> s.X, s.Range - (abs (s.Y - rowNo)))
-        |> Seq.map (fun (x, range) -> [ x - range .. x + range ])
-        |> Seq.concat
-        |> Set.ofSeq
+        |> Seq.map (fun (x, range) -> [ x - range; x + range ])
+        |> Seq.sort 
 
-    let beaconsOnRow = coords |> Seq.map snd |> Seq.filter (fun (_,y) -> y = rowNo) |> Set.ofSeq |> Set.count |> int64
-    printfn $"%d{beaconsOnRow}"
-    // printfn $"%A{coverage |> List.ofSeq}"
-    coverage |> Set.count |> int64 |> (+) -beaconsOnRow
-
+    // let beaconsOnRow = coords |> Seq.map snd |> Seq.filter (fun (_,y) -> y = rowNo) |> Set.ofSeq |> Set.count |> int64
+    // printfn $"%d{beaconsOnRow}"
+    printfn $"%A{coverage |> List.ofSeq}"
+    let first = coverage |> Seq.minBy Seq.head |> Seq.head
+    let last = coverage |> Seq.maxBy Seq.last |> Seq.last
+    // coverage |> Set.count |> int64 |> (+) -beaconsOnRow
+    printfn $"%A{first} %A{last}"
+    last - first
+    
 let part2 fn () = 0L
