@@ -52,7 +52,6 @@ let getCoverage coords rowNo =
         |> Seq.map (fun c -> (fst c, (getDistance >> getRange) <| c) |> makeSensor)
 
 
-    // printfn $"%d{rowNo} %A{sensors}"
     let withInRange = sensors |> findSensorsWithinRange rowNo
 
     withInRange
@@ -62,14 +61,11 @@ let getCoverage coords rowNo =
 let part1 rowNo fn () =
     let coords = parse fn
     let coverage = getCoverage coords rowNo
-    // printfn $"%A{coverage |> List.ofSeq}"
     let first = coverage |> Seq.minBy fst |> fst
     let last = coverage |> Seq.maxBy snd |> snd
-    // printfn $"%A{first} %A{last}"
     last - first
 
 let rec gapFinder (n: int64) (m: int64) (rem: (int64 * int64) seq) =
-    // printfn $"Looking for %d{n}"
 
     match n with
     | x when x >= m -> None
@@ -81,30 +77,19 @@ let rec gapFinder (n: int64) (m: int64) (rem: (int64 * int64) seq) =
 
         match candidates |> Seq.isEmpty with
         | true ->
-            // printfn "No candidates %A" <| rem
             Some n
         | false ->
             let next = (candidates |> Seq.head |> snd) + 1L
             let rem' = rem |> Seq.filter (fun t -> (snd t) >= next)
-            // printfn $"%d{next} %A{rem'}"
             gapFinder next m rem'
 
 
 let part2 maxV fn () =
     let coords = parse fn
-    (*
-    let coverage =
-        [ 0L .. 20L ]
-        |> Seq.map (fun cov -> getCoverage coords cov |> findGap)
-
-    coverage
-    |> Seq.map (fun (_, _, x) -> x)
-    |> List.ofSeq
-    |> printfn "%A"
-*)
+    
     let position =
         [ 0L .. maxV ]
-        |> PSeq.map (fun y ->
+        |> Seq.map (fun y ->
             let line = getCoverage coords y
 
             match y % 1000L with
