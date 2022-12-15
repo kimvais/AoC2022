@@ -42,7 +42,8 @@ let parse fn =
 
         [| m.Groups.[1]; m.Groups.[2]; m.Groups.[3]; m.Groups.[4] |]
         |> Array.map (fun g -> g.Value |> int64))
-    |> Seq.map (fun a -> (a.[0], a.[1]), (a.[2], a.[3])) |> List.ofSeq
+    |> Seq.map (fun a -> (a.[0], a.[1]), (a.[2], a.[3]))
+    |> List.ofSeq
 
 let findSensorsWithinRange row sensors = sensors |> Seq.filter (fun s -> (abs (s.Y - row) <= s.Range))
 
@@ -58,12 +59,7 @@ let getCoverage coords rowNo =
     |> Seq.map (fun s -> s.X, s.Range - (abs (s.Y - rowNo)))
     |> Seq.map (fun (x, range) -> (x - range, x + range))
 
-let part1 rowNo fn () =
-    let coords = parse fn
-    let coverage = getCoverage coords rowNo
-    let first = coverage |> Seq.minBy fst |> fst
-    let last = coverage |> Seq.maxBy snd |> snd
-    last - first
+
 
 let rec gapFinder (n: int64) (m: int64) (rem: (int64 * int64) seq) =
 
@@ -76,17 +72,27 @@ let rec gapFinder (n: int64) (m: int64) (rem: (int64 * int64) seq) =
             |> Seq.sortByDescending snd
 
         match candidates |> Seq.isEmpty with
-        | true ->
-            Some n
+        | true -> Some n
         | false ->
             let next = (candidates |> Seq.head |> snd) + 1L
             let rem' = rem |> Seq.filter (fun t -> (snd t) >= next)
             gapFinder next m rem'
 
+let part1 rowNo fn () =
+    let coords = parse fn
+    let coverage = getCoverage coords rowNo
+    let first = coverage |> Seq.minBy fst |> fst
+    let last = coverage |> Seq.maxBy snd |> snd
+    let total = last - first
+    // printfn $"%d{first} %d{last}"
+    match sign first with
+    // We need to fix the addToX for position 0 on distance calculation
+    | -1 -> total - 1L
+    | _ -> total
 
 let part2 maxV fn () =
     let coords = parse fn
-    
+
     let position =
         [ 0L .. maxV ]
         |> Seq.map (fun y ->
@@ -105,4 +111,4 @@ let part2 maxV fn () =
 
     printfn "%A" position
     let y, x = position
-    x.Value * maxV + y
+    x.Value * 4000000L + y
