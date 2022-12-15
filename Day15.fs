@@ -3,11 +3,27 @@
 open System.Text.RegularExpressions
 open AoC2022.Utils
 
-let getDistance vec =
-    let (sX, sY), (bX, bY) = vec
-    let xd = abs (sX - bX)
-    let yd = abs (sY - bY)
-    xd, yd
+let getDistance ((sX, sY), (bX, bY)) =
+    let x1 = Seq.max [ sX; bX ]
+    let x2 = Seq.min [ sX; bX ]
+    let y1 = Seq.max [ sY; bY ]
+    let y2 = Seq.min [ sY; bY ]
+
+    let addToX =
+        match sign x1, sign x2 with
+        | -1, 1
+        | 1, -1 -> 1L
+        | _ -> 0L
+
+    let addToY =
+        match sign y1, sign y2 with
+        | -1, 1
+        | 1, -1 -> 1L
+        | _ -> 0L
+
+    let xd = x1 - x2
+    let yd = y1 - y2
+    xd + addToX, yd + addToY
 
 let getRange (xd, yd) = xd + yd
 
@@ -34,6 +50,8 @@ let getCoverage coords rowNo =
         coords
         |> Seq.map (fun c -> (fst c, (getDistance >> getRange) <| c) |> makeSensor)
 
+
+    // printfn $"%d{rowNo} %A{sensors}"
     let withInRange = sensors |> findSensorsWithinRange rowNo
 
     withInRange
@@ -43,44 +61,35 @@ let getCoverage coords rowNo =
 let part1 rowNo fn () =
     let coords = parse fn
     let coverage = getCoverage coords rowNo
-    printfn $"%A{coverage |> List.ofSeq}"
+    // printfn $"%A{coverage |> List.ofSeq}"
     let first = coverage |> Seq.minBy fst |> fst
     let last = coverage |> Seq.maxBy snd |> snd
-    printfn $"%A{first} %A{last}"
+    // printfn $"%A{first} %A{last}"
     last - first
 
-let folder (s: int64, e: int64, gap: int64 option) ((l1: int64, r1: int64), (l2: int64, r2: int64)) =
-    let s' = Seq.min [ s; l1; l2 ]
+let rec gapFinder (n: int64) (m: int64) (rem: (int64 * int64) seq) =
+    // printfn $"Looking for %d{n}"
 
-    let gap' =
-        match l2 - r1 with
-        | n when n >= 0L ->
-            match gap with
-            | Some s -> Some s
-            | None -> Some r1
-        | _ -> None
+    match n with
+    | x when x >= m -> None
+    | _ ->
+        let candidates =
+            rem
+            |> Seq.filter (fun t -> (fst t) <= n && (snd t) > n)
+            |> Seq.sortByDescending snd
 
-    s', r2, gap'
+        match candidates |> Seq.isEmpty with
+        | true ->
+            // printfn "No candidates %A" <| rem
+            Some n
+        | false ->
+            let next = (candidates |> Seq.head |> snd) + 1L
+            let rem' = rem |> Seq.filter (fun t -> (snd t) >= next)
+            // printfn $"%d{next} %A{rem'}"
+            gapFinder next m rem'
 
-let findGap (ranges: (int64 * int64) seq) : int64 * int64 * int64 option =
-    let ranges' = ranges |> Seq.pairwise
-    ranges' |> Seq.fold folder (0, 20L, None)
-   
-let rec gapFinder (n:int64) (rem: (int64 * int64) list) =
-    match rem with
-    | [] -> None
-    | l ->
-        let candidates  = l |> List.sortBy fst |> List.takeWhile (fun t -> (fst t) <= n) |> List.sortByDescending snd
-        match candidates with
-        | [] -> Some n
-        | c ->
-            let next = c |> List.head |> snd
-            let rem' = l |> List.filter (fun t -> (fst t) >= next)
-            printfn $"%d{next} %A{rem'}"
-            gapFinder next rem'
-        
 
-let part2 fn () =
+let part2 maxV fn () =
     let coords = parse fn
     (*
     let coverage =
@@ -92,10 +101,21 @@ let part2 fn () =
     |> List.ofSeq
     |> printfn "%A"
 *)
-    [0L..20L] |> Seq.map (
-        fun y -> 
-        let line = (getCoverage coords y |> List.ofSeq)
-        printfn $"%A{line}"
-        gapFinder 0L line
-    ) |> List.ofSeq |> printfn "%A"
-    0L
+    let position =
+        [ maxV .. -1L .. 0L ] // I'd guess it's towards the end, always :)
+        |> Seq.map (fun y ->
+            let line = getCoverage coords y
+
+            match y % 1000L with
+            | 0L -> printfn $"%d{y}"
+            | _ -> ()
+
+            gapFinder 0L maxV line)
+        |> Seq.mapi (fun i x -> (int64 i, x))
+        |> Seq.find (fun (_, v) ->
+            match v with
+            | None -> false
+            | Some _ -> true)
+
+    let y, x = position
+    x.Value * maxV + y
