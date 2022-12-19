@@ -40,9 +40,7 @@ type State =
       ObsidianBots: int
       Geodes: int
       GeodeBots: int
-      Round: int
-      Depth: int
-      }
+      Minute: int }
 
 let parse fn =
     let robotRe =
@@ -67,81 +65,94 @@ let parse fn =
     bp |> printfn "%A"
     bp
 
-let rec mine (bp: Blueprint) state =
-    match state.Round with
-    | 24 -> state
-    | _ ->
-        let state' =
-            { state with
-                Round = state.Round + 1
-                Ore = state.Ore + state.OreBots
-                Clay = state.Clay + state.ClayBots
-                Obsidian = state.Obsidian + state.ObsidianBots
-                Geodes = state.Geodes + state.GeodeBots
-                Depth = state.Depth + 1}
-
-        seq
-            [ yield mine bp { state' with Round = state'.Round + 1 }
-              if state.Ore >= bp.Ore.Cost then
-                  yield
-                      mine
-                          bp
-                          { state' with
-                              Ore = state'.Ore - bp.Ore.Cost
-                              OreBots = state.OreBots + 1 }
-              if state.Ore >= bp.Clay.Cost then
-                  yield
-                      mine
-                          bp
-                          { state' with
-                              Ore = state'.Ore - bp.Clay.Cost
-                              ClayBots = state.ClayBots + 1 }
-              if
-                  state.Ore >= bp.Obsidian.Cost
-                  && state.Clay >= bp.Obsidian.ClayCost
-              then
-                  yield
-                      mine
-                          bp
-                          { state' with
-                              Ore = state'.Ore - bp.Obsidian.Cost
-                              Clay = state'.Clay - bp.Obsidian.ClayCost
-                              ObsidianBots = state.ObsidianBots + 1 }
-              if
-                  state.Ore >= bp.Geode.Cost
-                  && state.Obsidian >= bp.Geode.ObsidianCost
-              then
-                  yield
-                      mine
-                          bp
-                          { state' with
-                              Ore = state'.Ore - bp.Geode.Cost
-                              Obsidian = state'.Obsidian - bp.Geode.ObsidianCost
-                              GeodeBots = state.GeodeBots + 1 } ]
-        |> Seq.maxBy (fun s -> s.Geodes) 
-
-
 let part1 fn () =
-    let blueprints = parse fn
 
-    let initialState =
-        { Ore = 0
-          Clay = 0
-          Obsidian = 0
-          Geodes = 0
-          OreBots = 1
-          ClayBots = 0
-          ObsidianBots = 0
-          GeodeBots = 0
-          Round = 1
-          Depth = 0
-          }
+    let rec mine (bp: Blueprint) s =
 
-    blueprints
-    |> Seq.map (fun bp -> mine bp initialState)
-    |> printfn "%A"
+        if s.Minute = 24 then
+            s.Geodes
+        else
+            let minute = s.Minute + 1
 
-    0L
+            let res =
+                seq
+                    [ yield
+                          mine
+                              bp
+                              { s with
+                                  Minute = minute
+                                  Ore = s.Ore + s.OreBots
+                                  Clay = s.Clay + s.ClayBots
+                                  Obsidian = s.Obsidian + s.ObsidianBots
+                                  Geodes = s.Geodes + s.GeodeBots }
+
+                      if s.Ore >= bp.Ore.Cost && s.OreBots < (Seq.max [bp.Ore.Cost; bp.Clay.Cost; bp.Obsidian.Cost; bp.Geode.Cost]) then
+                          yield
+                              mine
+                                  bp
+                                  { s with
+                                      Minute = minute
+                                      Ore = s.Ore + s.OreBots - bp.Ore.Cost
+                                      Clay = s.Clay + s.ClayBots
+                                      Obsidian = s.Obsidian + s.ObsidianBots
+                                      Geodes = s.Geodes + s.GeodeBots
+                                      OreBots = s.OreBots + 1 }
+
+                      if s.Ore >= bp.Clay.Cost && s.ClayBots < bp.Obsidian.ClayCost then 
+                          yield
+                              mine
+                                  bp
+                                  { s with
+                                      Minute = minute
+                                      Ore = s.Ore + s.OreBots - bp.Clay.Cost
+                                      Clay = s.Clay + s.ClayBots
+                                      Obsidian = s.Obsidian + s.ObsidianBots
+                                      Geodes = s.Geodes + s.GeodeBots
+                                      ClayBots = s.ClayBots + 1 }
+
+                      if s.Ore >= bp.Obsidian.Cost && s.Clay >= bp.Obsidian.ClayCost then
+                          yield
+                              mine
+                                  bp
+                                  { s with
+                                      Minute = minute
+                                      Ore = s.Ore + s.OreBots - bp.Obsidian.Cost
+                                      Clay = s.Clay + s.ClayBots - bp.Obsidian.ClayCost
+                                      Obsidian = s.Obsidian + s.ObsidianBots
+                                      Geodes = s.Geodes + s.GeodeBots
+                                      ObsidianBots = s.ObsidianBots + 1 }
+
+                      if s.Ore >= bp.Geode.Cost && s.Obsidian >= bp.Geode.ObsidianCost then
+                          yield
+                              mine
+                                  bp
+                                  { s with
+                                      Minute = minute
+                                      Ore = s.Ore + s.OreBots - bp.Geode.Cost
+                                      Clay = s.Clay + s.ClayBots
+                                      Obsidian = s.Obsidian + s.ObsidianBots - bp.Geode.ObsidianCost
+                                      Geodes = s.Geodes + s.GeodeBots
+                                      GeodeBots = s.GeodeBots + 1 } ]
+
+            res |> Seq.max
+
+    let bps = parse fn
+
+    bps
+    |> Seq.map (fun bp ->
+        mine
+            bp
+            { Minute = 0
+              Ore = 0
+              Clay = 0
+              Obsidian = 0
+              Geodes = 0
+              OreBots = 1
+              ClayBots = 0
+              ObsidianBots = 0
+              GeodeBots = 0 })
+    |> Seq.max
+    |> int64
 
 let part2 fn () =
     parse fn
