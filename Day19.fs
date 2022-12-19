@@ -65,57 +65,75 @@ let parse fn =
     bp |> printfn "%A"
     bp
 
-let rec mine (bp: Blueprint) state =
-    match state.Round with
-    | 25 -> state
-    | _ ->
-        let needOreBots =
-            Seq.max [ bp.Ore.Cost; bp.Clay.Cost; bp.Obsidian.Cost; bp.Geode.Cost ]
+let rec mine (bp: Blueprint) queue =
+    match queue with
+    // | [ h ] -> h
+    | state :: queue' ->
+        match state.Round with
+        | 25 -> [queue |>  List.filter (fun s -> s.Round = 25)] @ mine bp (queue' |> List.filter (fun s -> s.Round < 25))
+        | _ ->
+            let queue'' = queue' |> List.sortByDescending (fun (s: State) ->
+                        (s.Geodes, s.Obsidian,s.Clay, s.Ore, s.GeodeBots, s.ObsidianBots, s.ClayBots, s.OreBots))
+            let q = queue''
+            printfn "%d" (q |> List.length)
+            (*
+                match List.length queue' with
+                | l when l >= 100000 -> queue'' |> List.truncate 100000
+                | _ -> queue''
+            *)
 
-        let needClayBots =
-            float bp.Obsidian.ClayCost / float bp.Obsidian.Cost
-            |> ceil
-            |> int
+            let newState =
+                { state with
+                    Round = state.Round + 1
+                    Ore = state.Ore + state.OreBots
+                    Clay = state.Clay + state.ClayBots
+                    Obsidian = state.Obsidian + state.ObsidianBots
+                    Geodes = state.Geodes + state.GeodeBots }
 
-        let needObisidianBots =
-            float bp.Geode.ObsidianCost / float bp.Geode.Cost |> ceil |> int
+            if
+                state.Obsidian >= bp.Geode.ObsidianCost
+                && state.Ore >= bp.Geode.Cost
+            then
 
-        printfn $"Bot targets - Ore: %d{needOreBots}, Clay: %d{needClayBots}, Obsidian: %d{needObisidianBots} "
-
-        let newState =
-            { state with
-                Round = state.Round + 1
-                Ore = state.Ore + state.OreBots
-                Clay = state.Clay + state.ClayBots
-                Obsidian = state.Obsidian + state.ObsidianBots
-                Geodes = state.Geodes + state.GeodeBots }
-
-        let state' =
-            if state.Obsidian >= bp.Geode.ObsidianCost && state.Ore >= bp.Geode.Cost then
-                { newState with
-                    GeodeBots = newState.GeodeBots + 1
-                    Ore = newState.Ore - bp.Geode.Cost
-                    Obsidian = newState.Obsidian - bp.Geode.ObsidianCost }
+                mine
+                    bp
+                    ([ { newState with
+                           GeodeBots = newState.GeodeBots + 1
+                           Ore = newState.Ore - bp.Geode.Cost
+                           Obsidian = newState.Obsidian - bp.Geode.ObsidianCost }
+                       newState ]
+                     @ q)
             elif
-                state.ObsidianBots < needObisidianBots && state.Ore >= bp.Obsidian.Cost
+                state.Ore >= bp.Obsidian.Cost
                 && state.Clay >= bp.Obsidian.ClayCost
             then
-                { newState with
-                    ObsidianBots = newState.ObsidianBots + 1
-                    Ore = newState.Ore - bp.Obsidian.Cost
-                    Clay = newState.Clay - bp.Obsidian.ClayCost }
-            elif state.ClayBots < needClayBots && state.Ore >= bp.Clay.Cost then
-                { newState with
-                    ClayBots = newState.ClayBots + 1
-                    Ore = newState.Ore - bp.Clay.Cost }
-            elif state.OreBots < needOreBots && state.Ore >= bp.Ore.Cost then
-                { newState with
-                    OreBots = newState.OreBots + 1
-                    Ore = newState.Ore - bp.Ore.Cost }
+                mine
+                    bp
+                    ([ { newState with
+                           ObsidianBots = newState.ObsidianBots + 1
+                           Ore = newState.Ore - bp.Obsidian.Cost
+                           Clay = newState.Clay - bp.Obsidian.ClayCost }
+                       newState ]
+                     @ q)
+            elif state.Ore >= bp.Clay.Cost then
+                mine
+                    bp
+                    ([ 
+                       { newState with
+                           ClayBots = newState.ClayBots + 1
+                           Ore = newState.Ore - bp.Clay.Cost }; newState ]
+                     @ q)
+            elif state.Ore >= bp.Ore.Cost then
+                mine
+                    bp
+                    ([ { newState with
+                           OreBots = newState.OreBots + 1
+                           Ore = newState.Ore - bp.Ore.Cost }
+                       newState ]
+                     @ q)
             else
-                newState
+                mine bp (q @ [ newState ])
 
-        mine bp state'
 
 let part1 fn () =
     let blueprints = parse fn
@@ -129,9 +147,12 @@ let part1 fn () =
           ClayBots = 0
           ObsidianBots = 0
           GeodeBots = 0
-          Round = 0 }
+          Round = 1 }
 
-    blueprints |> Seq.map (fun bp -> mine bp initialState) |> printfn "%A"
+    blueprints
+    |> Seq.map (fun bp -> mine bp [ initialState ])
+    |> printfn "%A"
+
     0L
 
 let part2 fn () =
