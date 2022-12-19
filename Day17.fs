@@ -45,3 +45,5 @@ let part1 fn () =
     let rocks = seq [Bar; Cross; Corner; Pole; Square] |> Seq.repeatForever
     getStartPos (Seq.head rocks) blocks |> printfn "%A"
     0L
+
+let part2 fn () = 0L

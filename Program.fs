@@ -37,15 +37,15 @@ let main argv =
     | "14" -> Day14.part1 "14" ()
     | "14b" -> Day14.part2 "14" ()
     | "15" -> Day15.part1 2000000L "15" ()
-    | "15b" -> Day15.part2 4000000L"15" ()
+    | "15b" -> Day15.part2 4000000L "15" ()
     | "16" -> Day16.part1 "16" ()
     | "16b" -> Day16.part2 "16" ()
-    | "test" -> Day17.part1 "test17" ()
-    (*
     | "17" -> Day17.part1 "17" ()
     | "17b" -> Day17.part2 "17" ()
     | "18" -> Day18.part1 "18" ()
     | "18b" -> Day18.part2 "18" ()
+    | "test" -> Day18.part1 "test18" ()
+    (*
     | "19" -> Day19.part1 "19" ()
     | "19b" -> Day19.part2 "19" ()
     | "20" -> Day20.part1 "20" ()
