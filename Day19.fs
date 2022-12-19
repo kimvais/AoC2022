@@ -70,7 +70,7 @@ let part1 fn () =
     let rec mine (bp: Blueprint) s =
 
         if s.Minute = 24 then
-            s.Geodes
+            s
         else
             let minute = s.Minute + 1
 
@@ -134,15 +134,12 @@ let part1 fn () =
                                       Geodes = s.Geodes + s.GeodeBots
                                       GeodeBots = s.GeodeBots + 1 } ]
 
-            res |> Seq.max
+            res |> Seq.maxBy (fun s -> s.Geodes)
 
     let bps = parse fn
 
-    bps
-    |> Seq.map (fun bp ->
-        mine
-            bp
-            { Minute = 0
+    let best = bps |> Seq.map (fun bp -> bp.Id, mine bp {
+              Minute = 0
               Ore = 0
               Clay = 0
               Obsidian = 0
@@ -151,8 +148,8 @@ let part1 fn () =
               ClayBots = 0
               ObsidianBots = 0
               GeodeBots = 0 })
-    |> Seq.max
-    |> int64
+    printfn "%A" best
+    best |> Seq.sumBy (fun (i, s) -> i * s.Geodes) |> int64
 
 let part2 fn () =
     parse fn
