@@ -115,72 +115,76 @@ let ``day 8, part 2`` () =
     Day8.part2 "8" () |> should equal 385112L
 
 [<Fact>]
-let ``day 9, part 1`` () =
-    Day9.part1 "test9" () |> should equal 13L
-    // Day9.part2 "9" () |> should equal 
-   
-[<Fact>]
+let ``day 9, part 1`` () = Day9.part1 "test9" () |> should equal 13L
+// Day9.part2 "9" () |> should equal
+
+[<Fact(Skip="Not implemented")>]
 let ``day 9, part 2`` () =
-    // Day9.part2 "test9" () |> should equal 
-    // Day9.part2 "9" () |> should equal 
-    ()
+    Day9.part2 "test9" () |> should equal 36L
 
 [<Fact>]
-let ``day 10, part 1`` () =
-    Day10.part1 "test10" () |> should equal 13140L
-    
+let ``day 10, part 1`` () = Day10.part1 "test10" () |> should equal 13140L
+
 [<Fact(Skip = "Needs refactoring")>]
 let ``day 11, part 1`` () =
     Day11.part1 "test11" () |> should equal 10605L
     Day11.part1 "11" () |> should equal 182293L
 
 [<Fact(Skip = "Needs refactoring")>]
-let ``day 11, part 2`` () =
-    Day11.part2 "test11" () |> should equal 2713310158L
-    
+let ``day 11, part 2`` () = Day11.part2 "test11" () |> should equal 2713310158L
+
 [<Fact>]
 let ``day 12, part 1`` () =
     Day12.part1 "test12" () |> should equal 31L
     Day12.part1 "12" () |> should equal 408L
-    
+
 [<Fact>]
 let ``day 12, part 2`` () =
     Day12.part2 "test12" () |> should equal 29L
     Day12.part2 "12" () |> should equal 399L
-   
+
 [<Fact>]
 let ``day 13, part 1`` () =
     Day13.part1 "test13" () |> should equal 13L
     Day13.part1 "13" () |> should equal 5292L
-    
+
 [<Fact>]
 let ``day 13, part 2`` () =
     Day13.part2 "test13" () |> should equal 140L
     Day13.part2 "13" () |> should equal 23868L
-    
+
 [<Fact>]
 let ``day 14, part 1`` () =
     Day14.part1 "test14" () |> should equal 24L
     Day14.part1 "14" () |> should equal 808L
-    
+
 [<Fact>]
 let ``day 14, part 2`` () =
     Day14.part2 "test14" () |> should equal 93L
     Day14.part2 "14" () |> should equal 26625L
-    
+
 [<Fact>]
 let ``day 15, part 1`` () =
     Day15.part1 10L "test15" () |> should equal 26L
     Day15.part1 2000000L "15" () |> should equal 6275922L
 
-[<Fact>]
+[<Fact(Skip="Real input takes way too long...")>]
 let ``day 15, part 2`` () =
     Day15.part2 20L "test15" () |> should equal 56000011L
+    Day15.part2 4000000L "15" () |> should equal 11747175442119L
+
+[<Fact(Skip="Not implemented")>]
+let ``day 16, part 1`` () = Day16.part1 "test16" () |> should equal 1651L
+
+[<Fact(Skip="Not implemented")>]
+let ``day 17, part 1`` () = Day17.part1 "test17" () |> should equal 3068L
 
 [<Fact>]
-let ``day 16, part 1`` () =
-    Day16.part1 "test16" () |> should equal 1651L
-   
+let ``day 20, part 1`` () =
+    Day20.part1 "test20" () |> should equal 3L
+    Day20.part1 "20" () |> should equal 15297L
+
 [<Fact>]
-let ``day 17, part 1`` () =
-    Day17.part1 "test17" () |> should equal 3068L
+let ``day 20, part 2`` () =
+    Day20.part2 "test20" () |> should equal 1623178306L
+    Day20.part2 "20" () |> should equal 2897373276210L
