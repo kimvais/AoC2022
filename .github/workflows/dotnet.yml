@@ -25,6 +25,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Download input files
-      run: pwsh ./download_inputfiles.ps1
+      shell: pwsh
+      run: $GITHUB_WORKSPACE/download_inputfiles.ps1
     - name: Test
       run: dotnet test --no-build --verbosity normal
