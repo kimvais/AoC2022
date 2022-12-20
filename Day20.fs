@@ -16,22 +16,23 @@ let rec mix numbers toMix =
         let pos = numbers |> List.findIndex (fun n -> n = h) |> int64
         let front, back = numbers |> List.splitAt (int pos)
         let numbers' = front @ (List.tail back)
-
+        (*
         match len with
         | 6L ->
             printfn "%d at %d to %d" h.Value pos (pos + h.Value)
             printNumbers numbers
         | _ -> ()
-
-        let insertAt = (2L * len + pos + h.Value) % len
+*)
+        let insertAt = (pos + h.Value) %! len
 
         mix (numbers' |> List.insertAt (int insertAt) h) (List.tail l)
 
 let rec run numbers rounds =
+    let mixOrder = numbers |> List.sortBy (fun n -> n.OrigPos)
     match rounds with
     | 0 -> numbers
     | _ ->
-        let numbers' = mix numbers numbers
+        let numbers' = mix numbers mixOrder
         run numbers' (rounds - 1)
 
 let solve fn key rounds =
@@ -41,9 +42,7 @@ let solve fn key rounds =
         |> List.mapi (fun i s -> { OrigPos = i; Value = int64 s * key })
 
     let mixed =
-        run numbers rounds
-        |> Seq.repeatForever
-        |> Seq.skipWhile (fun n -> n.Value <> 0)
+        run numbers rounds |> Seq.repeatForever |> Seq.skipWhile (fun n -> n.Value <> 0)
 
     [ 1000; 2000; 3000 ]
     |> Seq.map (fun v -> mixed |> Seq.skip v |> Seq.head |> (fun n -> n.Value))
