@@ -83,8 +83,16 @@ let part1 rowNo fn () =
     let coverage = getCoverage coords rowNo
     let first = coverage |> Seq.minBy fst |> fst
     let last = coverage |> Seq.maxBy snd |> snd
-    let total = last - first
-    // printfn $"%d{first} %d{last}"
+
+    let total =
+        last - first
+        // Add sensors on the row to locations.
+        + (coords
+           |> Seq.map (fun ((x, _), (_, _)) -> x)
+           |> Seq.filter (fun n -> n = rowNo)
+           |> Seq.length
+           |> int64)
+
     match sign first with
     // We need to fix the addToX for position 0 on distance calculation
     | -1 -> total - 1L
