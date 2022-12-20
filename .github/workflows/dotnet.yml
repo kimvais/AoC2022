@@ -27,5 +27,7 @@ jobs:
     - name: Download input files
       shell: pwsh
       run: ./download_inputfiles.ps1
+      env:
+        AOC_SESSION_COOKIE: ${{ secrets.AOC_SESSION_COOKIE }}
     - name: Test
       run: dotnet test --no-build --verbosity normal
