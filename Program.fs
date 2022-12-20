@@ -46,10 +46,10 @@ let main argv =
     | "18b" -> Day18.part2 "18" ()
     | "19" -> Day19.part1 "19" ()
     | "19b" -> Day19.part2 "19" ()
-    | "test" -> Day19.part1 "19" ()
-    (*
     | "20" -> Day20.part1 "20" ()
     | "20b" -> Day20.part2 "20" ()
+    | "test" -> Day20.part1 "test20" ()
+    (*
     | "21" -> Day21.part1 "21" ()
     | "21b" -> Day21.part2 "21" ()
     | "22" -> Day22.part1 "22" ()

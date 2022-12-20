@@ -172,3 +172,5 @@ module AStar =
         let gScores = Map.ofList [start, 0.]
         let fScores = Map.ofList [start, config.fCost start]
         crawler Set.empty ([start], gScores, fScores, Map.empty)
+        
+let inline (%!) a b = (a % b + b) % b
