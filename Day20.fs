@@ -2,36 +2,36 @@
 
 open AoC2022.Utils
 
-type Number = { OrigPos: int; Value: int }
+type Number = { OrigPos: int64; Value: int64 }
 
 let printNumbers n = n |> List.map (fun n -> n.Value) |> printfn "%A"
 
 let rec mix numbers toMix =
-    let len = List.length numbers - 1
+    let len = List.length numbers - 1 |> int64
 
     match toMix with
     | [] -> numbers
     | l ->
         let h = List.head l
-        let pos = numbers |> List.findIndex (fun n -> n = h)
-        let front, back = numbers |> List.splitAt pos
+        let pos = numbers |> List.findIndex (fun n -> n = h) |> int64
+        let front, back = numbers |> List.splitAt (int pos)
         let numbers' = front @ (List.tail back)
 
         match len with
-        | 6 ->
+        | 6L ->
             printfn "%d at %d to %d" h.Value pos (pos + h.Value)
             printNumbers numbers
         | _ -> ()
 
-        let insertAt = (2 * len + pos + h.Value) % len
+        let insertAt = (2L * len + pos + h.Value) % len
 
-        mix (numbers' |> List.insertAt insertAt h) (List.tail l)
+        mix (numbers' |> List.insertAt (int insertAt) h) (List.tail l)
 
-let part1 fn () =
+let solve fn key rounds =
     let numbers =
         readInput fn
         |> List.ofSeq
-        |> List.mapi (fun i s -> { OrigPos = i; Value = int s })
+        |> List.mapi (fun i s -> { OrigPos = i; Value = int64 s  })
 
     let toMix = numbers |> List.sortBy (fun n -> n.OrigPos)
 
@@ -45,4 +45,6 @@ let part1 fn () =
     |> Seq.sum
     |> int64
 
+let part1 fn () =
+    solve fn 1L 1L
 let part2 fn () = 0L
