@@ -1,4 +1,5 @@
 $URI = "https://adventofcode.com"
+Start-Sleep -Milliseconds 1  # Needed for https://stackoverflow.com/a/49859001/180174
 $webSession = [Microsoft.PowerShell.Commands.WebRequestSession]::new()
 $webSession.Cookies.Add($URI,[System.Net.Cookie]::new("session", $Env:AOC_SESSION_COOKIE))
 
