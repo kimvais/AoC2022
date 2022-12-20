@@ -27,16 +27,21 @@ let rec mix numbers toMix =
 
         mix (numbers' |> List.insertAt (int insertAt) h) (List.tail l)
 
+let rec run numbers rounds =
+    match rounds with
+    | 0 -> numbers
+    | _ ->
+        let numbers' = mix numbers numbers
+        run numbers' (rounds - 1)
+
 let solve fn key rounds =
     let numbers =
         readInput fn
         |> List.ofSeq
-        |> List.mapi (fun i s -> { OrigPos = i; Value = int64 s  })
-
-    let toMix = numbers |> List.sortBy (fun n -> n.OrigPos)
+        |> List.mapi (fun i s -> { OrigPos = i; Value = int64 s * key })
 
     let mixed =
-        mix numbers toMix
+        run numbers rounds
         |> Seq.repeatForever
         |> Seq.skipWhile (fun n -> n.Value <> 0)
 
@@ -45,6 +50,5 @@ let solve fn key rounds =
     |> Seq.sum
     |> int64
 
-let part1 fn () =
-    solve fn 1L 1L
-let part2 fn () = 0L
+let part1 fn () = solve fn 1L 1
+let part2 fn () = solve fn 811589153L 10
