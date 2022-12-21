@@ -1,5 +1,6 @@
 ﻿module AoC2022.Day21
 
+open System
 open AoC2022.Utils
 
 
@@ -12,6 +13,10 @@ type Operation =
 type Monkey =
     | NumberMonkey of int64
     | OperationMonkey of Operation * string * string
+
+type HalfMonkey =
+    | Int of int64
+    | Source of string
 
 let parseOp =
     function
@@ -39,11 +44,13 @@ let revOp op (a: int64) (b: int64) =
     | Add -> (-) a b
     | Mul -> (/) a b
 
-let revOpName = function
+let revOpName =
+    function
     | Div -> "*"
     | Add -> "-"
     | Mul -> "/"
     | Sub -> "+"
+
 let doMonkey (numberMonkeys: Map<string, Monkey>) opMonkey =
     let n =
         match opMonkey with
@@ -62,25 +69,33 @@ let solvePart2 numberMonkeys opMonkeys =
             let (OperationMonkey (op, ma, mb)) = m
             let am = numberMonkeys |> Map.tryFind ma
             let bm = numberMonkeys |> Map.tryFind mb
+            (*
+            
+            match am with
+            | None -> ()
+            | Some x -> printfn $"%A{op} %A{x} %A{mb}"
 
-            let NumberMonkey value, source =
-                match am, bm with
-                | Some n, None -> n, mb
-                | None, Some n -> n, ma
-
-            i, (op, value, source))
-        
+            match bm with
+            | None -> ()
+            | Some x -> printfn $"%A{op} %A{ma} %A{x}"
+            *)
+            match am, bm with
+            | Some (NumberMonkey n), None -> i, (op, Source mb, Int n)
+            | None, Some (NumberMonkey n) -> i, (op, Int n, Source ma) )
     let monkeys = monkeyChain |> Map.ofSeq
+    printfn "%A" monkeys
     let _, final, next = monkeys.["root"]
 
-    let rec unChain (chain: Map<string,Operation*int64*string>) acc next =
+    let rec unChain (chain: Map<string, Operation * int64 * string>) acc next =
         match next with
         | "humn" -> acc
         | _ ->
             let op, n, next' = chain.[next]
-            printfn $"%d{acc} %s{revOpName op} %d{n} ="
+            printfn $"%A{acc} %s{revOpName op} %A{n} ="
             unChain chain ((revOp op) acc n) next'
-    unChain monkeys final next
+    0L
+    
+    // unChain monkeys final next
 
 let rec shout (numberMonkeys: Map<string, Monkey>) (opMonkeys: Set<string * Monkey>) =
 
@@ -106,7 +121,7 @@ let rec shout (numberMonkeys: Map<string, Monkey>) (opMonkeys: Set<string * Monk
 
     match readyMonkeys |> Set.isEmpty with
     | true ->
-        match Map.tryFind "root" numberMonkeys with
+        match Map.tryFind "root" numberMonkeys' with
         | Some (NumberMonkey m) -> m
         | None -> solvePart2 numberMonkeys' opMonkeys'
     | false -> shout numberMonkeys' opMonkeys'
@@ -135,9 +150,9 @@ let getMonkeys fn =
 
 let part1 fn () =
     let numberMonkeys, opMonkeys = getMonkeys fn
-    shout numberMonkeys opMonkeys
+    shout numberMonkeys opMonkeys |> int64
 
 let part2 fn () =
     let numberMonkeys, opMonkeys = getMonkeys fn
     let numberMonkeys' = numberMonkeys |> Map.remove "humn"
-    shout numberMonkeys' opMonkeys
+    shout numberMonkeys' opMonkeys |> int64
