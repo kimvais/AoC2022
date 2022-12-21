@@ -43,31 +43,38 @@ let doMonkey (numberMonkeys: Map<string, Monkey>) opMonkey =
 
     NumberMonkey n
 
+let solvePart2 numberMonkeys opMonkeys =
+    // TODO
+    NumberMonkey 0L
+
 let rec shoutOut (numberMonkeys: Map<string, Monkey>) (opMonkeys: Set<string * Monkey>) =
-    match opMonkeys |> Set.isEmpty with
-    | true -> numberMonkeys.["root"]
-    | false ->
-        let readyMonkeys =
-            opMonkeys
-            |> Set.filter (fun (_, m) ->
-                match m with
-                | NumberMonkey _ -> false
-                | OperationMonkey (_, a, b) ->
-                    Map.containsKey a numberMonkeys
-                    && Map.containsKey b numberMonkeys)
 
-        // readyMonkeys |> printfn "%A"
-        let opMonkeys' = Set.difference opMonkeys readyMonkeys
+    let readyMonkeys =
+        opMonkeys
+        |> Set.filter (fun (_, m) ->
+            match m with
+            | NumberMonkey _ -> false
+            | OperationMonkey (_, a, b) ->
+                Map.containsKey a numberMonkeys
+                && Map.containsKey b numberMonkeys)
 
-        let newNumberMonkeys =
-            readyMonkeys
-            |> Set.map (fun (i, m) -> i, doMonkey numberMonkeys m)
-            |> Map.ofSeq
+    // readyMonkeys |> printfn "%A"
+    let opMonkeys' = Set.difference opMonkeys readyMonkeys
 
-        let numberMonkeys' =
-            Map.fold (fun acc k v -> Map.add k v acc) numberMonkeys newNumberMonkeys
+    let newNumberMonkeys =
+        readyMonkeys
+        |> Set.map (fun (i, m) -> i, doMonkey numberMonkeys m)
+        |> Map.ofSeq
 
-        shoutOut numberMonkeys' opMonkeys'
+    let numberMonkeys' =
+        Map.fold (fun acc k v -> Map.add k v acc) numberMonkeys newNumberMonkeys
+
+    match readyMonkeys |> Set.isEmpty with
+    | true ->
+        match Map.tryFind "root" numberMonkeys with
+        | Some m -> m
+        | None -> solvePart2 numberMonkeys' opMonkeys'
+    | false -> shoutOut numberMonkeys' opMonkeys'
 
 
 let getMonkeys fn =
@@ -96,4 +103,8 @@ let part1 fn () =
     let (NumberMonkey root) = shoutOut numberMonkeys opMonkeys
     root
 
-let part2 fn () = 0L
+let part2 fn () =
+    let numberMonkeys, opMonkeys = getMonkeys fn
+    let numberMonkeys' = numberMonkeys |> Map.remove "humn"
+    shoutOut numberMonkeys' opMonkeys
+    0L
