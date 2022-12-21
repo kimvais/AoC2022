@@ -3,12 +3,6 @@
 open System.Text.RegularExpressions
 open AoC2022.Utils
 
-let (|Regex|_|) pattern s =
-    let m = Regex.Match(s, pattern)
-
-    match m.Success with
-    | false -> None
-    | true -> Some(List.tail [ for g in m.Groups -> g.Value ])
 
 let changeFunc num value =
     match value with

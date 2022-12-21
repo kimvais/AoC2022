@@ -188,3 +188,8 @@ let ``day 20, part 1`` () =
 let ``day 20, part 2`` () =
     Day20.part2 "test20" () |> should equal 1623178306L
     Day20.part2 "20" () |> should equal 2897373276210L
+
+[<Fact>]
+let ``day 21, part 1`` () =
+    Day21.part1 "test21" () |> should equal 152L
+    Day21.part1 "21" () |> should equal 168502451381566L

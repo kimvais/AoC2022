@@ -174,3 +174,10 @@ module AStar =
         crawler Set.empty ([start], gScores, fScores, Map.empty)
         
 let inline (%!) a b = (a % b + b) % b
+
+let (|Regex|_|) pattern s =
+    let m = Regex.Match(s, pattern)
+
+    match m.Success with
+    | false -> None
+    | true -> Some(List.tail [ for g in m.Groups -> g.Value ])
