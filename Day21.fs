@@ -95,13 +95,14 @@ let solvePart2 numberMonkeys opMonkeys =
         | _ ->
             let op, a, b = chain.[next]
 
-            let next, acc' =
+            let next, left, right =
                 match a, b with
-                | Int n, Source other -> other, (revOp op) n acc
-                | Source other, Int n -> other, (revOp op) acc n
+                | Int n, Source other -> other, n, acc
+                | Source other, Int n -> other, acc, n
                 | _ -> failwith "Problem with half-monkeys"
 
-            // printfn $"%A{acc} %s{revOpName op} %A{n} ="
+            let acc' = (revOp op) left right
+            printfn $"%d{left} %s{revOpName op} %d{right} = %d{acc'} (%s{next})"
             unChain chain acc' next
 
     0L
@@ -138,27 +139,22 @@ let rec shout (numberMonkeys: Map<string, Monkey>) (opMonkeys: Set<string * Monk
         | _ -> failwith "Invalid root monkey"
     | false -> shout numberMonkeys' opMonkeys'
 
+type MonkeyType =
+    | Number
+    | Operation
 
 let getMonkeys fn =
     let input = readInput fn |> Seq.map parse
 
-    let numberMonkeys =
+    let monkeyMap =
         input
-        |> Seq.filter (fun (_, m) ->
+        |> Seq.groupBy (fun (_, m) ->
             match m with
-            | NumberMonkey _ -> true
-            | _ -> false)
+            | NumberMonkey _ -> Number
+            | OperationMonkey _ -> Operation)
         |> Map.ofSeq
 
-    let opMonkeys =
-        input
-        |> Seq.filter (fun (_, m) ->
-            match m with
-            | OperationMonkey _ -> true
-            | _ -> false)
-        |> Set.ofSeq
-
-    numberMonkeys, opMonkeys
+    Map.ofSeq monkeyMap.[Number], Set.ofSeq monkeyMap.[Operation]
 
 let part1 fn () =
     let numberMonkeys, opMonkeys = getMonkeys fn
