@@ -32,6 +32,13 @@ let calculate op (a: int64) (b: int64) =
     | Sub -> (-) a b
     | Div -> (/) a b
 
+let revOp op (a: int64) (b: int64) =
+    match op with
+    | Sub -> (+) a b
+    | Div -> (*) a b
+    | Add -> (-) a b
+    | Mul -> (/) a b
+
 let doMonkey (numberMonkeys: Map<string, Monkey>) opMonkey =
     let n =
         match opMonkey with
@@ -44,7 +51,24 @@ let doMonkey (numberMonkeys: Map<string, Monkey>) opMonkey =
     NumberMonkey n
 
 let solvePart2 numberMonkeys opMonkeys =
-    // TODO
+    let monkeyChain =
+        opMonkeys
+        |> Seq.map (fun (i, m) ->
+            let (OperationMonkey (op, ma, mb)) = m
+            let am = numberMonkeys |> Map.tryFind ma
+            let bm = numberMonkeys |> Map.tryFind mb
+
+            let ((NumberMonkey value), source) =
+                match am, bm with
+                | Some n, None -> n, mb
+                | None, Some n -> n, ma
+
+            i, (op, value, source))
+
+    let monkeys = monkeyChain |> Map.ofSeq
+    monkeys.["root"] |> printfn "%A"
+    monkeys.["qmfl"] |> printfn "%A"
+
     NumberMonkey 0L
 
 let rec shoutOut (numberMonkeys: Map<string, Monkey>) (opMonkeys: Set<string * Monkey>) =
