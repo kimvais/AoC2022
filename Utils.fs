@@ -9,13 +9,12 @@ let readLines filePath = File.ReadLines(filePath)
 
 let getInputFilename s = (__SOURCE_DIRECTORY__ + (sprintf "/input/%s.txt" s))
 
-let readInput (s: string) = 
-    getInputFilename s |> readLines
+let readInput (s: string) = getInputFilename s |> readLines
 
 let readAsTest (s: string) =
     let fn = getInputFilename s
     File.ReadAllText(fn)
-    
+
 let getProblem (a: seq<string>) : string = a |> Seq.head
 
 module Seq =
@@ -110,7 +109,7 @@ module AStar =
     (* Shamelessly taken from
     https://github.com/ChrisPritchard/astar-search/
     *)
-    type Config<'a> = 
+    type Config<'a> =
         {
             /// <summary>
             /// A method that, given a source, will return its neighbours.
@@ -133,47 +132,68 @@ module AStar =
             isTarget: 'a -> bool
         }
 
-    let search<'a when 'a : comparison> start config : seq<'a> option =
+    let search<'a when 'a: comparison> start config : seq<'a> option =
 
         let rec reconstructPath cameFrom current =
             seq {
                 yield current
+
                 match Map.tryFind current cameFrom with
                 | None -> ()
                 | Some next -> yield! reconstructPath cameFrom next
             }
 
         let rec crawler closedSet (openSet, gScores, fScores, cameFrom) =
-            match config.maxIterations with 
+            match config.maxIterations with
             | Some c when c = Set.count closedSet -> None
             | _ ->
                 match List.sortBy (fun n -> Map.find n fScores) openSet with
-                | current::_ when config.isTarget current -> Some <| reconstructPath cameFrom current 
-                | current::rest ->
+                | current :: _ when config.isTarget current -> Some <| reconstructPath cameFrom current
+                | current :: rest ->
                     let gScore = Map.find current gScores
+
                     let next =
-                        config.neighbours current 
+                        config.neighbours current
                         |> Seq.filter (fun n -> closedSet |> Set.contains n |> not)
-                        |> Seq.fold (fun (openSet, gScores, fScores, cameFrom) neighbour ->
-                            let tentativeGScore = gScore + config.gCost current neighbour
-                            if List.contains neighbour openSet && tentativeGScore >= Map.find neighbour gScores 
-                            then (openSet, gScores, fScores, cameFrom)
-                            else
-                                let newOpenSet = if List.contains neighbour openSet then openSet else neighbour::openSet
-                                let newGScores = Map.add neighbour tentativeGScore gScores
-                                let newFScores = Map.add neighbour (tentativeGScore + config.fCost neighbour) fScores
-                                let newCameFrom = Map.add neighbour current cameFrom
-                                newOpenSet, newGScores, newFScores, newCameFrom
-                            ) (rest, gScores, fScores, cameFrom)
+                        |> Seq.fold
+                            (fun (openSet, gScores, fScores, cameFrom) neighbour ->
+                                let tentativeGScore = gScore + config.gCost current neighbour
+
+                                if
+                                    List.contains neighbour openSet
+                                    && tentativeGScore >= Map.find neighbour gScores
+                                then
+                                    (openSet, gScores, fScores, cameFrom)
+                                else
+                                    let newOpenSet =
+                                        if List.contains neighbour openSet then
+                                            openSet
+                                        else
+                                            neighbour :: openSet
+
+                                    let newGScores = Map.add neighbour tentativeGScore gScores
+
+                                    let newFScores =
+                                        Map.add neighbour (tentativeGScore + config.fCost neighbour) fScores
+
+                                    let newCameFrom = Map.add neighbour current cameFrom
+                                    newOpenSet, newGScores, newFScores, newCameFrom)
+                            (rest, gScores, fScores, cameFrom)
                     // printfn "%A" current
                     crawler (Set.add current closedSet) next
                 | _ -> None
 
-        let gScores = Map.ofList [start, 0.]
-        let fScores = Map.ofList [start, config.fCost start]
-        crawler Set.empty ([start], gScores, fScores, Map.empty)
-        
+        let gScores = Map.ofList [ start, 0. ]
+        let fScores = Map.ofList [ start, config.fCost start ]
+        crawler Set.empty ([ start ], gScores, fScores, Map.empty)
+
 let inline (%!) a b = (a % b + b) % b
+let inline (/%) (x: int64) = fun y -> Math.DivRem(x, y)
+let inline (/%?) (x: int64) = fun y -> 
+    let d, r = Math.DivRem(x, y)
+    match r with
+    | 0L -> d
+    | _ -> failwith $"Division ended with remainder %d{r}"
 
 let (|Regex|_|) pattern s =
     let m = Regex.Match(s, pattern)

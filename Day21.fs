@@ -24,6 +24,7 @@ let parseOp =
     | "+" -> Add
     | "-" -> Sub
     | "/" -> Div
+    | _ -> failwith "Invalid operation"
 
 let parse line =
     match line with
@@ -35,7 +36,7 @@ let calculate op (a: int64) (b: int64) =
     | Add -> (+) a b
     | Mul -> (*) a b
     | Sub -> (-) a b
-    | Div -> (/) a b
+    | Div -> (/%?) a b
 
 let revOp op (a: int64) (b: int64) =
     match op with
@@ -81,21 +82,31 @@ let solvePart2 numberMonkeys opMonkeys =
             *)
             match am, bm with
             | Some (NumberMonkey n), None -> i, (op, Source mb, Int n)
-            | None, Some (NumberMonkey n) -> i, (op, Int n, Source ma) )
+            | None, Some (NumberMonkey n) -> i, (op, Int n, Source ma))
+
     let monkeys = monkeyChain |> Map.ofSeq
     printfn "%A" monkeys
-    let _, final, next = monkeys.["root"]
+    let _, Int final, Source next = monkeys.["root"]
+    printfn "%A" monkeys.["root"]
 
-    let rec unChain (chain: Map<string, Operation * int64 * string>) acc next =
+    let rec unChain (chain: Map<string, Operation * HalfMonkey * HalfMonkey>) acc next =
         match next with
         | "humn" -> acc
         | _ ->
-            let op, n, next' = chain.[next]
-            printfn $"%A{acc} %s{revOpName op} %A{n} ="
-            unChain chain ((revOp op) acc n) next'
+            let op, a, b = chain.[next]
+
+            let next, acc' =
+                match a, b with
+                | Int n, Source other -> other, (revOp op) n acc
+                | Source other, Int n -> other, (revOp op) acc n
+                | _ -> failwith "Problem with half-monkeys"
+
+            // printfn $"%A{acc} %s{revOpName op} %A{n} ="
+            unChain chain acc' next
+
     0L
-    
-    // unChain monkeys final next
+
+    unChain monkeys final next
 
 let rec shout (numberMonkeys: Map<string, Monkey>) (opMonkeys: Set<string * Monkey>) =
 
@@ -124,6 +135,7 @@ let rec shout (numberMonkeys: Map<string, Monkey>) (opMonkeys: Set<string * Monk
         match Map.tryFind "root" numberMonkeys' with
         | Some (NumberMonkey m) -> m
         | None -> solvePart2 numberMonkeys' opMonkeys'
+        | _ -> failwith "Invalid root monkey"
     | false -> shout numberMonkeys' opMonkeys'
 
 
