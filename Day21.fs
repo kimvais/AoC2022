@@ -82,7 +82,7 @@ let solvePart2 numberMonkeys opMonkeys =
             unChain chain ((revOp op) acc n) next'
     unChain monkeys final next
 
-let rec shoutOut (numberMonkeys: Map<string, Monkey>) (opMonkeys: Set<string * Monkey>) =
+let rec shout (numberMonkeys: Map<string, Monkey>) (opMonkeys: Set<string * Monkey>) =
 
     let readyMonkeys =
         opMonkeys
@@ -109,7 +109,7 @@ let rec shoutOut (numberMonkeys: Map<string, Monkey>) (opMonkeys: Set<string * M
         match Map.tryFind "root" numberMonkeys with
         | Some (NumberMonkey m) -> m
         | None -> solvePart2 numberMonkeys' opMonkeys'
-    | false -> shoutOut numberMonkeys' opMonkeys'
+    | false -> shout numberMonkeys' opMonkeys'
 
 
 let getMonkeys fn =
@@ -135,9 +135,9 @@ let getMonkeys fn =
 
 let part1 fn () =
     let numberMonkeys, opMonkeys = getMonkeys fn
-    shoutOut numberMonkeys opMonkeys
+    shout numberMonkeys opMonkeys
 
 let part2 fn () =
     let numberMonkeys, opMonkeys = getMonkeys fn
     let numberMonkeys' = numberMonkeys |> Map.remove "humn"
-    shoutOut numberMonkeys' opMonkeys
+    shout numberMonkeys' opMonkeys
