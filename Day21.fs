@@ -39,6 +39,11 @@ let revOp op (a: int64) (b: int64) =
     | Add -> (-) a b
     | Mul -> (/) a b
 
+let revOpName = function
+    | Div -> "*"
+    | Add -> "-"
+    | Mul -> "/"
+    | Sub -> "+"
 let doMonkey (numberMonkeys: Map<string, Monkey>) opMonkey =
     let n =
         match opMonkey with
@@ -58,18 +63,24 @@ let solvePart2 numberMonkeys opMonkeys =
             let am = numberMonkeys |> Map.tryFind ma
             let bm = numberMonkeys |> Map.tryFind mb
 
-            let ((NumberMonkey value), source) =
+            let NumberMonkey value, source =
                 match am, bm with
                 | Some n, None -> n, mb
                 | None, Some n -> n, ma
 
             i, (op, value, source))
-
+        
     let monkeys = monkeyChain |> Map.ofSeq
-    monkeys.["root"] |> printfn "%A"
-    monkeys.["qmfl"] |> printfn "%A"
+    let _, final, next = monkeys.["root"]
 
-    NumberMonkey 0L
+    let rec unChain (chain: Map<string,Operation*int64*string>) acc next =
+        match next with
+        | "humn" -> acc
+        | _ ->
+            let op, n, next' = chain.[next]
+            printfn $"%d{acc} %s{revOpName op} %d{n} ="
+            unChain chain ((revOp op) acc n) next'
+    unChain monkeys final next
 
 let rec shoutOut (numberMonkeys: Map<string, Monkey>) (opMonkeys: Set<string * Monkey>) =
 
@@ -96,7 +107,7 @@ let rec shoutOut (numberMonkeys: Map<string, Monkey>) (opMonkeys: Set<string * M
     match readyMonkeys |> Set.isEmpty with
     | true ->
         match Map.tryFind "root" numberMonkeys with
-        | Some m -> m
+        | Some (NumberMonkey m) -> m
         | None -> solvePart2 numberMonkeys' opMonkeys'
     | false -> shoutOut numberMonkeys' opMonkeys'
 
@@ -124,11 +135,9 @@ let getMonkeys fn =
 
 let part1 fn () =
     let numberMonkeys, opMonkeys = getMonkeys fn
-    let (NumberMonkey root) = shoutOut numberMonkeys opMonkeys
-    root
+    shoutOut numberMonkeys opMonkeys
 
 let part2 fn () =
     let numberMonkeys, opMonkeys = getMonkeys fn
     let numberMonkeys' = numberMonkeys |> Map.remove "humn"
     shoutOut numberMonkeys' opMonkeys
-    0L
