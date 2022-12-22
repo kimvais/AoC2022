@@ -1,6 +1,5 @@
 ﻿module AoC2022.Day21
 
-open System
 open AoC2022.Utils
 
 
