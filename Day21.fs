@@ -9,6 +9,7 @@ type Operation =
     | Sub
     | Mul
     | Div
+    | Eq
 
 type Monkey =
     | NumberMonkey of int64
@@ -24,6 +25,7 @@ let parseOp =
     | "+" -> Add
     | "-" -> Sub
     | "/" -> Div
+    | "=" -> Eq
     | _ -> failwith "Invalid operation"
 
 let parse line =
@@ -37,6 +39,11 @@ let calculate op (a: int64) (b: int64) =
     | Mul -> (*) a b
     | Sub -> (-) a b
     | Div -> (/%?) a b
+    | Eq ->
+        (=) a b
+        |> function
+            | false -> 0L
+            | true -> 1L
 
 let revOp op (a: int64) (b: int64) =
     match op with
@@ -101,6 +108,12 @@ let solvePart2 numberMonkeys opMonkeys =
                 | Div, Int n, Source other ->
                     printfn $"%s{other} %d{n} * %d{acc}"
                     other, n * acc
+                | Sub, Int n, Source other ->
+                    printfn $"%s{other} %d{n} + %d{acc}"
+                    other, acc + n
+                | Sub, Source other, Int n ->
+                    printfn $"%s{other} %d{n} - %d{acc}"
+                    other, acc - n
                 | o, Int n, Source other -> other, (revOp o) n acc
                 | o, Source other, Int n -> other, (revOp o) acc n
                 | _ -> failwith "Problem with half-monkeys"
@@ -162,6 +175,7 @@ let part1 fn () =
     shout numberMonkeys opMonkeys |> int64
 
 let part2 fn () =
+    // Valid inputs for brute force would be 495L * n - 160L
     let numberMonkeys, opMonkeys = getMonkeys fn
     let numberMonkeys' = numberMonkeys |> Map.remove "humn"
     shout numberMonkeys' opMonkeys |> int64
