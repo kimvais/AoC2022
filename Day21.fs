@@ -93,19 +93,20 @@ let solvePart2 numberMonkeys opMonkeys =
         match next with
         | "humn" -> acc
         | _ ->
-            let op, a, b = chain.[next]
-
-            let next, left, right =
-                match a, b with
-                | Int n, Source other -> other, n, acc
-                | Source other, Int n -> other, acc, n
+            let next, acc' =
+                match chain.[next] with
+                | Div, Source other, Int n ->
+                    printfn $"%s{other} %d{n} / %d{acc}"
+                    other, n / acc
+                | Div, Int n, Source other ->
+                    printfn $"%s{other} %d{n} * %d{acc}"
+                    other, n * acc
+                | o, Int n, Source other -> other, (revOp o) n acc
+                | o, Source other, Int n -> other, (revOp o) acc n
                 | _ -> failwith "Problem with half-monkeys"
 
-            let acc' = (revOp op) left right
-            printfn $"%d{left} %s{revOpName op} %d{right} = %d{acc'} (%s{next})"
+            // printfn $"%d{left} %s{revOpName op} %d{right} = %d{acc'} (%s{next})"
             unChain chain acc' next
-
-    0L
 
     unChain monkeys final next
 
