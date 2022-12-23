@@ -29,6 +29,7 @@
         <Compile Include="Day20.fs" />
         <Compile Include="Day21.fs" />
         <Compile Include="Day22.fs" />
+        <Compile Include="Day23.fs" />
         <Compile Include="Tests.fs" />
         <Compile Include="Program.fs" />
         <Content Include="input\test1.txt" />
@@ -64,6 +65,7 @@
         <Content Include="input\20.txt" />
         <Content Include="input\test21.txt" />
         <Content Include="input\test22.txt" />
+        <Content Include="input\test23.txt" />
         <Content Include="download_inputfiles.ps1" />
         <Content Include=".github\workflows\dotnet.yml" />
     </ItemGroup>
